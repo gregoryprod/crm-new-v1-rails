@@ -42,8 +42,8 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - name: Install PostgreSQL client (schema load uses psql)
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+      - name: Install PostgreSQL 17 client (psql loads the schema; pg_dump must match the server version)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client-17
       - name: Lint
         run: bin/rubocop
       - name: Security scan
