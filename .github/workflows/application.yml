@@ -43,7 +43,11 @@ jobs:
         with:
           bundler-cache: true
       - name: Install PostgreSQL 17 client (psql loads the schema; pg_dump must match the server version)
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client-17
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y -qq postgresql-client-17
+          pg_dump --version
       - name: Lint
         run: bin/rubocop
       - name: Security scan
