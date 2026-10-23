@@ -1,0 +1,108 @@
+# Kamal 2 deployment of the CRM: `bin/kamal setup` once, then `bin/kamal deploy`.
+# Host, domain and secrets come from the environment (see docs/deploy/README.md);
+# nothing here is specific to a real server.
+service: vpc-crm
+image: vpc-crm
+
+servers:
+  web:
+    hosts:
+      - <%= ENV.fetch("KAMAL_HOST") %>
+    options:
+      memory: 700m
+  # Outbox → Telegram notifications to the administrators' chat.
+  worker:
+    hosts:
+      - <%= ENV.fetch("KAMAL_HOST") %>
+    cmd: bin/rails notifications:work
+    options:
+      memory: 300m
+    env:
+      secret:
+        - TELEGRAM_BOT_TOKEN
+        - TELEGRAM_ADMIN_CHAT_ID
+
+proxy:
+  host: <%= ENV.fetch("CRM_HOST") %>
+  ssl: true
+  # kamal-proxy replaces client X-Forwarded-* headers, so TRUST_PROXY=true is safe.
+  forward_headers: false
+  app_port: 80
+  healthcheck:
+    path: /up
+    interval: 3
+    timeout: 5
+
+# Local registry: the image travels to the server over SSH, no Docker Hub / GHCR account.
+registry:
+  server: localhost:5555
+
+builder:
+  arch: amd64
+
+ssh:
+  user: <%= ENV.fetch("KAMAL_SSH_USER", "root") %>
+
+env:
+  clear:
+    APP_ORIGIN: https://<%= ENV.fetch("CRM_HOST") %>
+    CRM_TIME_ZONE: Europe/Moscow
+    TRUST_PROXY: "true"
+    RAILS_LOG_LEVEL: info
+    RAILS_MAX_THREADS: "3"
+    WEB_CONCURRENCY: "1"
+    LEADS_ALLOWED_ORIGINS: "<%= ENV.fetch("LEADS_ALLOWED_ORIGINS", "") %>"
+    CONSENT_PD_VERSION: "<%= ENV.fetch("CONSENT_PD_VERSION", "") %>"
+    CONSENT_MARKETING_VERSION: "<%= ENV.fetch("CONSENT_MARKETING_VERSION", "") %>"
+  secret:
+    - SECRET_KEY_BASE
+    - AUTH_SECRET
+    - DATABASE_URL
+
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole"
+  seed-owner: app exec --reuse "bin/rails crm:seed_owner"
+
+accessories:
+  # PostgreSQL 17, data on the host disk, reachable only inside the Docker network.
+  db:
+    image: postgres:17-alpine
+    host: <%= ENV.fetch("KAMAL_HOST") %>
+    port: "127.0.0.1:5432:5432"
+    env:
+      clear:
+        POSTGRES_DB: vpc_crm
+        POSTGRES_USER: vpc
+        TZ: UTC
+        PGTZ: UTC
+      secret:
+        - POSTGRES_PASSWORD
+    directories:
+      - data:/var/lib/postgresql/data
+    options:
+      memory: 600m
+
+  # Daily pg_dump kept 30 days on the host (ТЗ NFR-04). Copying the files off the server
+  # (an object storage in Russia) is a separate decision: docs/deploy/README.md.
+  backup:
+    image: postgres:17-alpine
+    host: <%= ENV.fetch("KAMAL_HOST") %>
+    env:
+      clear:
+        PGHOST: vpc-crm-db
+        PGUSER: vpc
+        PGDATABASE: vpc_crm
+      secret:
+        - PGPASSWORD
+    directories:
+      - backups:/backups
+    cmd: >-
+      sh -c 'while true; do
+      pg_dump --format=custom --file=/backups/vpc_crm-$(date -u +%Y%m%dT%H%M%SZ).dump &&
+      find /backups -name "vpc_crm-*.dump" -mtime +30 -delete;
+      sleep 86400; done'
+    options:
+      memory: 128m

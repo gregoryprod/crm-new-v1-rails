@@ -1,0 +1,16 @@
+<header class="topbar">
+  <a class="brand" href="/crm">VetPetCare</a>
+  <div class="who">
+    <nav class="crm-nav" aria-label="Разделы CRM">
+      <a href="/crm/full">Рабочее пространство</a>
+      <a href="/crm/leads">Заявки</a>
+      <a href="/crm/clients">Клиенты</a>
+      <a href="/crm/analytics">Аналитика</a>
+      <a href="/crm/calendar">Расписание</a>
+    </nav>
+    <span><%= user.name %> · <%= { "ADMIN" => "администратор", "OWNER" => "владелец" }[user.role] %></span>
+    <form action="/api/auth/logout" method="post">
+      <button class="button secondary" type="submit">Выйти</button>
+    </form>
+  </div>
+</header>

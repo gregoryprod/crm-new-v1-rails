@@ -1,0 +1,33 @@
+<%= render "shared/crm_header", user: current_user %>
+<main class="content">
+  <h1>Клиенты</h1>
+  <p class="muted">Исторические карточки и новые обращения сохранены отдельно. Совпадения телефона не объединяют клиентов автоматически.</p>
+  <form class="filters">
+    <label>Имя или телефон <input name="q" value="<%= @q %>" maxlength="100"></label>
+    <button class="button">Найти</button>
+  </form>
+  <% if @data.nil? %>
+    <%= render "shared/unavailable_section" %>
+  <% else %>
+    <p>Карточек: <%= @data["total"] %></p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Клиент</th><th>Телефон</th><th>Источник</th></tr></thead>
+        <tbody>
+          <% @data["rows"].each do |c| %>
+            <tr>
+              <td><a href="/crm/clients/<%= c["id"] %>"><%= c["lastName"] %> <%= c["firstName"] %></a></td>
+              <td><%= c["phoneRaw"] %></td>
+              <td><%= c["sourceKey"] ? "Историческая карточка" : "CRM" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <nav aria-label="Страницы клиентов">
+      <% if @data["page"] > 1 %><a href="/crm/clients?<%= URI.encode_www_form(q: @q, page: @data["page"] - 1) %>">← Назад</a><% end %>
+      <span><%= @data["page"] %> / <%= @data["pages"] %></span>
+      <% if @data["page"] < @data["pages"] %><a href="/crm/clients?<%= URI.encode_www_form(q: @q, page: @data["page"] + 1) %>">Дальше →</a><% end %>
+    </nav>
+  <% end %>
+</main>

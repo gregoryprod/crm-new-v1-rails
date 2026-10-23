@@ -1,0 +1,177 @@
+<%
+  lead = @lead
+  names = lead["userNames"]
+  utm = lead["utm"].is_a?(Hash) ? lead["utm"] : {}
+  utm_keys = Leads::Payload::UTM_KEYS.select { |key| utm[key].is_a?(String) }
+  active_ids = lead["staff"].map { |m| m["id"] }
+  inactive = lead["assignedTo"] && !active_ids.include?(lead["assignedTo"]) ? { "id" => lead["assignedTo"], "name" => names[lead["assignedTo"]] || "удалённый пользователь" } : nil
+  actor_name = ->(actor) { actor == "system" ? "система" : (names[actor] || "удалённый пользователь") }
+  user_name = ->(id) { id.is_a?(String) ? (names[id] || "удалённый пользователь") : "не назначен" }
+  describe = lambda do |entry|
+    before = entry["before"].is_a?(Hash) ? entry["before"] : {}
+    after = entry["after"].is_a?(Hash) ? entry["after"] : {}
+    case entry["action"]
+    when "lead.created"
+      lines = [ "Заявка создана из квиза, статус «#{status_label(after['status'])}»." ]
+      lines << "Возможный дубль: совпадений по телефону — #{after['duplicate_candidates'].to_i}." if after["possible_duplicate"]
+      lines << "Заполнено скрытое поле квиза — заявка помечена как спам." if after["spam_reason"] == "honeypot"
+      lines
+    when "lead.updated"
+      lines = []
+      lines << "Статус: «#{status_label(before['status'])}» → «#{status_label(after['status'])}»." if after.key?("status")
+      lines << "Ответственный: #{user_name.(before['assigned_to'])} → #{user_name.(after['assigned_to'])}." if after.key?("assigned_to")
+      lines << (after["comment"].present? ? "Комментарий: «#{after['comment']}»." : "Комментарий удалён.") if after.key?("comment")
+      lines
+    else
+      [ entry["action"] ]
+    end
+  end
+%>
+<% content_for :title, "Заявка — CRM VetPetCare" %>
+<%= render "shared/crm_header", user: current_user %>
+<main class="content">
+  <p><a href="/crm">← К списку заявок</a></p>
+  <h1><%= lead["client"]["lastName"] %> <%= lead["client"]["firstName"] %></h1>
+  <p class="muted">
+    Заявка от <%= format_date_time(lead["createdAt"]) %> (<%= crm_time_zone %>) ·
+    <span class="badge status-<%= lead["status"].downcase %>"><%= status_label(lead["status"]) %></span>
+    <% if lead["client"]["possibleDuplicate"] %><span class="badge warn">возможный дубль</span><% end %>
+  </p>
+
+  <div class="card-grid">
+    <section class="panel" aria-labelledby="owner-title">
+      <h2 id="owner-title">Владелец и питомец</h2>
+      <dl class="facts">
+        <dt>Фамилия</dt><dd><%= lead["client"]["lastName"] %></dd>
+        <dt>Имя</dt><dd><%= lead["client"]["firstName"] %></dd>
+        <dt>Телефон</dt><dd><a href="tel:<%= lead["client"]["phone"] %>"><%= format_phone(lead["client"]["phone"]) %></a></dd>
+        <dt>Как ввёл клиент</dt><dd><%= lead["client"]["phoneRaw"] %></dd>
+        <dt>Вид питомца</dt><dd><%= lead["patient"]["species"] %> <span class="muted">(<%= species_category(lead["patient"]["species"]) %>)</span></dd>
+      </dl>
+      <% if lead["honeypot"] %><p class="notice">Скрытое поле квиза заполнено: вероятно, бот.</p><% end %>
+    </section>
+
+    <section class="panel" aria-labelledby="work-title">
+      <h2 id="work-title">Обработка</h2>
+      <%
+        draft = @draft || { "status" => lead["status"], "assigned_to" => lead["assignedTo"], "comment" => lead["comment"] }
+        version = @conflict ? @conflict["version"] : lead["version"]
+      %>
+      <%= form_with url: "/crm/leads/#{lead["id"]}", method: :patch, class: "update-form" do %>
+        <% if @update_message %><p class="<%= @update_ok ? "success" : "error" %>" role="<%= @update_ok ? "status" : "alert" %>"><%= @update_message %></p><% end %>
+        <% if @conflict %>
+          <div class="notice" role="group" aria-label="Сверка изменений заявки">
+            <p>Конфликт версии. Черновик в форме сохранён.</p>
+            <p>Текущая версия <%= @conflict["version"] %>: статус «<%= status_label(@conflict["status"]) %>», ответственный <%= @conflict["assignedTo"] ? (names[@conflict["assignedTo"]] || "неизвестный сотрудник") : "не назначен" %>.</p>
+            <p>Комментарий: <%= @conflict["comment"].presence || "—" %></p>
+            <p>Поля формы по-прежнему содержат твой черновик. Проверь его и нажми «Повторить сохранение».</p>
+          </div>
+        <% end %>
+        <%= hidden_field_tag :expected_version, version, id: nil %>
+        <div class="field">
+          <label for="u-status">Статус</label>
+          <select id="u-status" name="status">
+            <% Lead::STATUSES.each do |s| %><option value="<%= s %>" <%= "selected" if draft["status"] == s %>><%= status_label(s) %></option><% end %>
+          </select>
+        </div>
+        <div class="field">
+          <label for="u-assigned">Ответственный</label>
+          <select id="u-assigned" name="assigned_to">
+            <option value="" <%= "selected" unless draft["assigned_to"] %>>Не назначен</option>
+            <% if inactive %><option value="<%= inactive["id"] %>" <%= "selected" if draft["assigned_to"] == inactive["id"] %>><%= inactive["name"] %> (неактивен)</option><% end %>
+            <% lead["staff"].each do |member| %><option value="<%= member["id"] %>" <%= "selected" if draft["assigned_to"] == member["id"] %>><%= member["name"] %></option><% end %>
+          </select>
+        </div>
+        <div class="field">
+          <label for="u-comment">Комментарий</label>
+          <textarea id="u-comment" name="comment" rows="4" maxlength="<%= Leads::Staff::MAX_COMMENT %>"><%= draft["comment"] %></textarea>
+        </div>
+        <button class="button" data-turbo-submits-with="Сохраняем…"><%= @conflict ? "Повторить сохранение" : "Сохранить" %></button>
+      <% end %>
+    </section>
+
+    <section class="panel" aria-labelledby="delivery-title">
+      <h2 id="delivery-title">Уведомление администраторам</h2>
+      <p><span class="<%= %w[failed pending].include?(@delivery.tone) ? "badge warn" : "badge" %>" data-delivery="<%= @delivery.tone %>"><%= @delivery.label %></span></p>
+      <% if @delivery.attempts_text || @delivery.finished_at || @delivery.next_attempt_at %>
+        <dl class="facts">
+          <% if @delivery.attempts_text %><dt>Попыток</dt><dd><%= @delivery.attempts_text %></dd><% end %>
+          <% if @delivery.finished_at %><dt><%= @delivery.tone == "ok" ? "Доставлено" : "Остановлено" %></dt><dd><%= format_date_time(@delivery.finished_at) %></dd><% end %>
+          <% if @delivery.next_attempt_at %><dt>Следующая попытка</dt><dd><%= format_date_time(@delivery.next_attempt_at) %></dd><% end %>
+        </dl>
+      <% end %>
+      <% if @delivery.error %><p class="error" role="status">Ошибка: <%= @delivery.error %></p><% end %>
+    </section>
+
+    <section class="panel" aria-labelledby="dup-title">
+      <h2 id="dup-title">Возможные дубли</h2>
+      <% if lead["candidates"].empty? %>
+        <p class="muted">Совпадений по телефону нет.</p>
+      <% else %>
+        <p class="muted">Совпадает телефон. Карточки не объединяются автоматически — решение за сотрудником.</p>
+        <ul class="plain-list">
+          <% lead["candidates"].each do |c| %>
+            <li>
+              <% if c["leadId"] %><a href="/crm/leads/<%= c["leadId"] %>"><%= c["lastName"] %> <%= c["firstName"] %></a><% else %><span><%= c["lastName"] %> <%= c["firstName"] %></span><% end %>
+              <span class="muted"><%= format_phone(c["phone"]) %> · <%= format_date_time(c["createdAt"]) %></span>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </section>
+
+    <section class="panel" aria-labelledby="source-title">
+      <h2 id="source-title">Источник</h2>
+      <dl class="facts">
+        <dt>Версия квиза</dt><dd><%= lead["quizVersion"] || "—" %></dd>
+        <dt>Страница</dt><dd class="break"><%= lead["pageUrl"] || "—" %></dd>
+        <% if utm_keys.empty? %><dt>UTM</dt><dd>—</dd><% end %>
+        <% utm_keys.each do |key| %><dt>utm_<%= key %></dt><dd><%= utm[key] %></dd><% end %>
+      </dl>
+    </section>
+
+    <section class="panel" aria-labelledby="consent-title">
+      <h2 id="consent-title">Согласия</h2>
+      <% if lead["consents"].empty? %>
+        <p class="muted">Нет записей о согласиях.</p>
+      <% else %>
+        <ul class="plain-list">
+          <% lead["consents"].each do |consent| %>
+            <li><%= { "PD_OFFER" => "Обработка персональных данных", "MARKETING" => "Маркетинговые сообщения" }[consent["type"]] %>: <strong><%= consent["granted"] ? "да" : "нет" %></strong>
+              <span class="muted">версия <%= consent["documentVersion"] %>, <%= format_date_time(consent["grantedAt"]) %></span></li>
+          <% end %>
+        </ul>
+      <% end %>
+    </section>
+
+    <section class="panel wide-panel" aria-labelledby="bookings-title">
+      <h2 id="bookings-title">Записи на приём</h2>
+      <% if lead["bookings"].any? %>
+        <ul>
+          <% lead["bookings"].each do |b| %>
+            <li><%= format_date_time(b["start"]) %> · <%= b["doctor"] %> · <%= b["title"] %> · <%= b["status"] == "active" ? "Активна" : "Отменена" %> · оплата не подтверждена</li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p>Записей пока нет.</p>
+      <% end %>
+      <a href="<%= lead["bookings"].any? ? "/crm/calendar?day=#{Calendar::Slots.moscow_day(lead['bookings'].first['start'])}" : "/crm/calendar" %>">Открыть расписание</a>
+    </section>
+
+    <section class="panel wide-panel" aria-labelledby="history-title">
+      <h2 id="history-title">История</h2>
+      <% if lead["history"].empty? %>
+        <p class="muted">Записей нет.</p>
+      <% else %>
+        <ol class="history">
+          <% lead["history"].each do |entry| %>
+            <li>
+              <span class="muted"><%= format_date_time(entry["at"]) %> · <%= actor_name.(entry["actor"]) %></span>
+              <% describe.(entry).uniq.each do |line| %><p><%= line %></p><% end %>
+            </li>
+          <% end %>
+        </ol>
+      <% end %>
+    </section>
+  </div>
+</main>

@@ -1,0 +1,6 @@
+<label>Врач
+  <select name="doctor_id" required>
+    <option value="" disabled selected>Выбери врача</option>
+    <% doctors.each do |d| %><option value="<%= d["id"] %>"><%= d["name"] %></option><% end %>
+  </select>
+</label>

@@ -1,0 +1,78 @@
+<%
+  client = @details["client"]
+  legacy = @details["legacy"]
+  payload = legacy && legacy["payload"].is_a?(Hash) ? legacy["payload"] : {}
+  history = payload["history"].is_a?(Array) ? payload["history"] : []
+%>
+<%= render "shared/crm_header", user: current_user %>
+<main class="content">
+  <a href="/crm/clients">← Клиенты</a>
+  <h1><%= client["lastName"] %> <%= client["firstName"] %></h1>
+  <p><%= client["phoneRaw"] %></p>
+  <div class="card-grid">
+    <section class="panel">
+      <h2>Питомцы</h2>
+      <% if @details["patients"].any? %>
+        <ul><% @details["patients"].each do |p| %><li><%= p["name"] || "Имя не указано" %> · <%= p["species"] %></li><% end %></ul>
+      <% else %>
+        <p>Подтверждённых карточек питомцев пока нет. Имя в старой истории не устанавливает отдельного питомца.</p>
+      <% end %>
+      <a href="/crm/calendar">Открыть расписание</a>
+      <details>
+        <summary>Добавить проверенного питомца</summary>
+        <%= form_with url: "/crm/clients/#{client["id"]}/patients", method: :post do %>
+          <%= hidden_field_tag :operation_id, SecureRandom.uuid, id: nil %>
+          <fieldset style="border: 0; padding: 0">
+            <label class="field">Имя питомца <input name="name" required maxlength="200"></label>
+            <label class="field">Вид питомца <input name="species" required maxlength="50"></label>
+            <label><input type="checkbox" name="confirmed" value="1" required> Данные питомца проверены с владельцем</label>
+            <p><button class="button" data-turbo-submits-with="Сохраняем…">Сохранить питомца</button></p>
+          </fieldset>
+        <% end %>
+      </details>
+    </section>
+    <% if legacy %>
+      <section class="panel">
+        <h2>Исходная карточка</h2>
+        <p>Исходный ID: <%= legacy["sourceId"] %></p>
+        <p>Имя питомца в источнике: <%= text_or_dash(payload["petName"]) %></p>
+        <p>Порода / сведения: <%= text_or_dash(payload["breedInfo"]) %></p>
+        <p class="muted">Исторические объединения и кандидаты не подтверждают личность отдельного владельца или животного. Сохрани исходную связь при проверке.</p>
+        <details>
+          <summary>Наблюдаемые суммы источника</summary>
+          <p>Оплачено в справочнике: <%= rub(payload["sourceReportedPaidCents"]) %></p>
+          <p>Потрачено в справочнике: <%= rub(payload["sourceReportedSpentCents"]) %></p>
+          <p>Баланс справочника: <%= rub(payload["sourceReportedBalanceCents"]) %></p>
+          <p class="muted">Эти поля не распределяют оплаты по услугам. Стоимость исторического обращения не подтверждает оплату, выручку или прибыль.</p>
+        </details>
+      </section>
+    <% end %>
+  </div>
+  <% if @payments %>
+    <%= render "shared/payments_table", rows: @payments, client: true %>
+  <% else %>
+    <p role="status">Оплаты временно недоступны. Обнови страницу.</p>
+  <% end %>
+  <% if legacy %>
+    <section class="panel">
+      <h2>История источника · <%= history.length %></h2>
+      <p class="muted">Даты показаны как в исходнике; часовой пояс старой выгрузки не установлен. Это история обращений, а не занятость нового календаря.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Дата источника</th><th>Специалист</th><th>Услуга / питомец</th><th>Стоимость</th><th>Состояние источника</th></tr></thead>
+          <tbody>
+            <% history.each do |h| %>
+              <tr>
+                <td><%= text_or_dash(h["sourceDateTime"] || h["date"]) %></td>
+                <td><%= text_or_dash(h["doctor"]) %></td>
+                <td><%= text_or_dash(h["service"]) %> · <%= text_or_dash(h["petName"]) %></td>
+                <td><%= rub(h["costCents"]) %></td>
+                <td><%= text_or_dash(h["sourceAttendance"] || h["attendance"]) %><%= " · удалено в источнике" if FullCrm::AnalyticsModel.truthy?(h["deleted"]) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% end %>
+</main>

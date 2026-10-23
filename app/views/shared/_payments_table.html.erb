@@ -1,0 +1,30 @@
+<% total = rows.sum { |p| p["amountCents"] } %>
+<section class="panel">
+  <h2>Оплаты услуг · CRM</h2>
+  <p class="muted">Только зафиксированные оплаты завершённых приёмов. Период — по дате фиксации, московское время. Авансы, возвраты и суммы исторической выгрузки не включены.</p>
+  <dl class="payment-metrics">
+    <div><dt>Оплачено услуг</dt><dd><%= rub(total) %></dd></div>
+    <div><dt>Платежи</dt><dd><%= rows.length %></dd></div>
+    <div><dt>Средняя оплата</dt><dd><%= rows.any? ? rub(FullCrm::AnalyticsModel.js_round(total.to_f / rows.length)) : "—" %></dd></div>
+  </dl>
+  <% if rows.empty? %>
+    <p>Зафиксированных оплат за выбранный период нет.</p>
+  <% else %>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Зафиксировано, МСК</th><% unless client %><th>Клиент</th><% end %><th>Услуга / врач</th><th>Способ</th><th>Оплата, ₽</th></tr></thead>
+        <tbody>
+          <% rows.each do |p| %>
+            <tr>
+              <td><%= format_date_time_seconds(p["paidAt"]) %></td>
+              <% unless client %><td><a href="/crm/clients/<%= p["clientId"] %>"><%= p["clientLastName"] %> <%= p["clientFirstName"] %></a></td><% end %>
+              <td><%= p["title"] %><p class="muted"><%= p["doctorName"] %></p><% if p["note"].present? %><p><%= p["note"] %></p><% end %></td>
+              <td><%= Payment::METHOD_LABELS[p["method"]] %></td>
+              <td><%= rub(p["amountCents"]) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>

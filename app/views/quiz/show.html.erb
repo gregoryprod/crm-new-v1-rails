@@ -1,0 +1,133 @@
+<% content_for :title, "Подобрать приём · VetPetCare" %>
+<% content_for :head do %><%= stylesheet_link_tag "quiz" %><% end %>
+<%
+  lead_saved = @quiz["lead_id"].present?
+  price = lambda do |cents|
+    next "Цена уточняется" if cents.nil?
+    rub(cents)
+  end
+%>
+<main class="quiz-shell">
+  <a class="quiz-brand" href="/quiz" aria-label="VetPetCare — подбор приёма">VetPetCare</a>
+  <div class="quiz-progress" aria-label="<%= lead_saved ? "Заявка сохранена" : (@step == "pet" ? "Шаг 1 из 2" : "Шаг 2 из 2") %>">
+    <span class="<%= lead_saved || @step == "contact" ? "done" : "active" %>"></span>
+    <span class="<%= lead_saved ? "done" : (@step == "contact" ? "active" : "") %>"></span>
+    <span class="<%= lead_saved ? "active" : "" %>"></span>
+  </div>
+
+  <% unless lead_saved %>
+    <p class="quiz-eyebrow">VetPetCare · забота рядом</p>
+    <h1>Подберём приём для питомца</h1>
+    <p class="quiz-intro">Расскажи немного о питомце, оставь контакты и выбери удобное время.</p>
+
+    <% if @step == "pet" %>
+      <%= form_with url: "/quiz", method: :get, class: "quiz-card" do %>
+        <%= hidden_field_tag :step, "contact", id: nil %>
+        <fieldset>
+          <legend>Кто нуждается в заботе?</legend>
+          <p class="quiz-hint">Это поможет подготовиться к приёму.</p>
+          <div class="species-options">
+            <% QuizController::SPECIES.each do |option| %>
+              <label class="species-option<%= " selected" if @species == option %>">
+                <input type="radio" name="species" value="<%= option %>" <%= "checked" if @species == option %> required>
+                <span><%= option %></span>
+              </label>
+            <% end %>
+          </div>
+          <button class="quiz-button">Продолжить <span aria-hidden="true">→</span></button>
+        </fieldset>
+      <% end %>
+    <% else %>
+      <%= form_with url: "/quiz", method: :post, class: "quiz-card" do %>
+        <%= hidden_field_tag :species, @species, id: nil %>
+        <%= hidden_field_tag :idempotency_key, @idempotency_key, id: nil %>
+        <fieldset>
+          <legend>Как с тобой связаться?</legend>
+          <p class="quiz-hint">Оставь контакты — администратор сможет уточнить запрос.</p>
+          <label class="quiz-field"><span>Имя</span><input name="first_name" autocomplete="given-name" maxlength="100" value="<%= params[:first_name] %>" required></label>
+          <label class="quiz-field"><span>Фамилия</span><input name="last_name" autocomplete="family-name" maxlength="100" value="<%= params[:last_name] %>" required></label>
+          <label class="quiz-field"><span>Телефон с кодом страны</span><input name="phone" autocomplete="tel" inputmode="tel" maxlength="64" placeholder="+7 999 123-45-67" type="tel" value="<%= params[:phone] %>" required></label>
+          <label class="quiz-consent"><input type="checkbox" name="consent_pd" value="1" required <%= "checked" if params[:consent_pd] == "1" %>>
+            <span>Разрешаю сохранить имя, фамилию, телефон и вид питомца в локальной CRM для обработки этой заявки.</span></label>
+          <label class="quiz-consent"><input type="checkbox" name="consent_marketing" value="1" <%= "checked" if params[:consent_marketing] == "1" %>>
+            <span>Также разрешаю маркетинговые сообщения (необязательно).</span></label>
+          <label class="quiz-trap" aria-hidden="true">Сайт <input name="website" autocomplete="off" tabindex="-1"></label>
+          <% if @lead_error %><p class="quiz-error" role="alert"><%= @lead_error %></p><% end %>
+          <div class="quiz-actions">
+            <a class="quiz-button secondary" href="/quiz?<%= URI.encode_www_form(species: @species) %>">Назад</a>
+            <button class="quiz-button" data-turbo-submits-with="Сохраняем…">Сохранить заявку</button>
+          </div>
+        </fieldset>
+      <% end %>
+    <% end %>
+    <footer class="quiz-footer">Перед внешней публикацией здесь появятся утверждённые сведения об операторе и политика обработки данных.</footer>
+  <% else %>
+    <section class="quiz-card quiz-success" aria-labelledby="success-title">
+      <div class="quiz-success-mark" aria-hidden="true">✓</div>
+      <p class="quiz-eyebrow">Заявка сохранена</p>
+      <h1 id="success-title" tabindex="-1">Спасибо, заявка принята</h1>
+      <% if @booking %>
+        <div class="booking-confirmation" role="status">
+          <h2>Приём записан</h2>
+          <p><strong><%= @booking["title"] %></strong></p>
+          <p><%= @booking["doctor"] %></p>
+          <% start = Time.iso8601(@booking["start"]).getlocal("+03:00") %>
+          <p><%= start.day %> <%= CalendarHelper::MONTHS[start.month - 1] %> <%= start.year %> г. в <%= start.strftime("%H:%M") %></p>
+          <p><%= price.(@booking["priceCents"]) %><%= " · предоплата #{@booking["prepaymentPercent"]}%" if @booking["prepaymentPercent"].to_i > 0 %></p>
+          <p class="payment-note">Оплата пока не подтверждена.</p>
+        </div>
+      <% elsif @quiz["booking_token"] %>
+        <div class="booking-panel" aria-labelledby="booking-title">
+          <h2 id="booking-title">Выбери специалиста и время</h2>
+          <p class="quiz-hint">Запись будет подтверждена после ответа CRM.</p>
+          <% if flash[:quiz_error] %><p class="quiz-error" role="alert"><%= flash[:quiz_error] %></p><% end %>
+          <% if @catalog_error %>
+            <p class="quiz-error" role="alert"><%= @catalog_error %></p>
+            <a class="quiz-button secondary" href="/quiz">Загрузить каталог ещё раз</a>
+          <% elsif @catalog %>
+            <%= form_with url: "/quiz", method: :get, class: "booking-fields" do %>
+              <label class="quiz-field"><span>Специалист</span>
+                <select name="doctor">
+                  <option value="">Выбери специалиста</option>
+                  <% @catalog["doctors"].each do |d| %><option value="<%= d["id"] %>" <%= "selected" if @doctor_id == d["id"] %>><%= d["name"] %><%= " · #{d["specialty"]}" if d["specialty"].present? %></option><% end %>
+                </select>
+              </label>
+              <label class="quiz-field"><span>Услуга</span>
+                <select name="service" <%= "disabled" unless @doctor_id %>>
+                  <option value="">Выбери услугу</option>
+                  <% @services.each do |s| %><option value="<%= s["id"] %>" <%= "selected" if @service&.dig("id") == s["id"] %>><%= s["title"] %> · <%= s["durationMinutes"] %> мин. · <%= price.(s["priceCents"]) %></option><% end %>
+                </select>
+              </label>
+              <label class="quiz-field"><span>Дата</span><input type="date" name="day" value="<%= @day %>" min="<%= Calendar::Slots.moscow_day(Time.current) %>"></label>
+              <button class="quiz-button secondary"><%= @doctor_id ? "Показать свободное время" : "Показать услуги" %></button>
+            <% end %>
+            <% if @service %>
+              <p class="booking-price"><%= price.(@service["priceCents"]) %><%= " · предоплата #{@service["prepaymentPercent"]}%" if @service["prepaymentPercent"] > 0 %></p>
+              <%= form_with url: "/quiz/booking", method: :post, class: "booking-time" do %>
+                <%= hidden_field_tag :operation_id, @operation_id, id: nil %>
+                <%= hidden_field_tag :doctor, @doctor_id, id: nil %>
+                <%= hidden_field_tag :service, @service["id"], id: nil %>
+                <%= hidden_field_tag :day, @day, id: nil %>
+                <div class="booking-time-heading"><h3>Свободное время</h3><a class="text-button" href="/quiz?<%= URI.encode_www_form(doctor: @doctor_id, service: @service["id"], day: @day) %>">Обновить</a></div>
+                <% if @slots.any? %>
+                  <div class="booking-slots" role="group" aria-label="Свободное время">
+                    <% @slots.each do |slot| %>
+                      <label class="slot-button"><input type="radio" name="start" value="<%= slot["start"] %>" required> <%= Time.iso8601(slot["start"]).getlocal("+03:00").strftime("%H:%M") %></label>
+                    <% end %>
+                  </div>
+                  <button class="quiz-button" data-turbo-submits-with="Подтверждаем…">Записаться на приём</button>
+                  <p class="booking-caption">Запись к специалисту <%= @catalog["doctors"].find { |d| d["id"] == @doctor_id }&.dig("name") %> будет сохранена после подтверждения CRM.</p>
+                <% else %>
+                  <p>На эту дату свободного времени нет. Выбери другой день.</p>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="quiz-intro">Мы получили заявку. Администратор сможет уточнить запрос и подобрать специалиста.</p>
+      <% end %>
+      <a class="quiz-button secondary again-button" href="/quiz?restart=1">Отправить ещё одну заявку</a>
+    </section>
+  <% end %>
+</main>

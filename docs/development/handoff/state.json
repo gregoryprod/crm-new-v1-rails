@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "snapshot_date": "2026-10-11",
+  "authority": "Refresh GitHub PR/issues/checks and Beads remote before acting; this is a dated snapshot",
+  "repository": "artemiyvladimirov-cmyk/vpc-crm",
+  "github_owner": "artemiyvladimirov-cmyk",
+  "product": "VetPetCare",
+  "project": {
+    "url": "https://github.com/users/gregoryprod/projects/1",
+    "owner": "gregoryprod",
+    "private": true,
+    "repository_access_implies_project_access": false
+  },
+  "main_sha": "57b395c5062bda96fb84abf6ea6c3efa40c82ee8",
+  "merged_prs": [
+    5,
+    9,
+    11,
+    6
+  ],
+  "pending_lead_intake": {
+    "issue": 3,
+    "beads": "vpc-crm-t90",
+    "pr": 12,
+    "branch": "feat/issue-3-lead-intake",
+    "head_sha": "99679040ca3b10841be2a2e5ae4e62c06ded3d27",
+    "state": "OPEN",
+    "execution_status": "review",
+    "ci": "all 10 checks passed at this head",
+    "review": "independent Codex approved this SHA, not a GitHub approval",
+    "ci_url": "https://github.com/artemiyvladimirov-cmyk/vpc-crm/actions/runs/38153079251",
+    "review_url": "https://github.com/artemiyvladimirov-cmyk/vpc-crm/pull/12#issuecomment-6110864720"
+  },
+  "handoff": {
+    "issue": 13,
+    "beads": "vpc-crm-qb2",
+    "branch": "chore/issue-13-agent-handoff",
+    "pr_base": "feat/issue-3-lead-intake",
+    "state": "OPEN, pending owner acceptance",
+    "pr": 14
+  },
+  "next_existing_task": {
+    "issue": 4,
+    "beads": "vpc-crm-17k",
+    "status": "blocked",
+    "blocker": "issue 3 awaiting accepted merge",
+    "goal": "outbox delivery/retries, not all CRM v1"
+  },
+  "context_issue": 7,
+  "beads": {
+    "version": "1.3.0",
+    "mode": "embedded",
+    "dolt_cli_tested": "2.2.2",
+    "remote_ref": "refs/dolt/data",
+    "single_writer": true,
+    "remote_sha": "read live with git ls-remote origin refs/dolt/data"
+  },
+  "runtime": {
+    "stack": [
+      "Next.js App Router",
+      "React",
+      "TypeScript",
+      "Drizzle",
+      "PostgreSQL"
+    ],
+    "local_compose": "PostgreSQL 17 on loopback",
+    "private_database_in_git": false,
+    "production_deployed_by_this_work": false,
+    "production_verified": false
+  },
+  "design": {
+    "repository": "gregoryprod/vetpetcare",
+    "path": "landing",
+    "commit": "efb80662982b05db9e5eec80b8e1b05c6a9a3ab8",
+    "design_blob": "e1871c5b6bb844905d5bcbc1facf04fb9a19228e",
+    "styles_blob": "f3b8b2990953eda0514c5ee94c4f1cf82c473a7b",
+    "ported_to_app": false
+  },
+  "approved_future_goal": {
+    "scope": "Полная CRM v1 по ТЗ с декомпозицией на этапы",
+    "team": "GPT-6.1-Sol xhigh + GPT-6-Luna",
+    "implementation_started": false
+  },
+  "excluded": [
+    "real exports and customer data",
+    "local .env and provider sessions",
+    "raw logs and .orchestration",
+    "Mac PostgreSQL runtime",
+    "unrelated agency/server infrastructure"
+  ],
+  "verification": "docs/development/handoff/verification.md"
+}

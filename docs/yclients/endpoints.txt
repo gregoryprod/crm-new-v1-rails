@@ -1,0 +1,308 @@
+DELETE /api/v1/activity/{company_id}/{activity_id} | Групповые события | Удаление группового события
+DELETE /api/v1/chain/{chain_id}/loyalty/abonement_types/{loyalty_abonement_type_id} | Типы абонементов | Удаление типа абонемента
+DELETE /api/v1/chain/{chain_id}/loyalty/programs/{loyalty_program_id} | Лояльность | Удалить акцию в сети
+DELETE /api/v1/client/{company_id}/{id} | Клиенты | Удалить клиента
+DELETE /api/v1/company/{company_id}/booking_forms/{form_id}/ | Настройки букформы | Удалить букформу
+DELETE /api/v1/company/{company_id}/clients/{client_id}/comments/{comment_id} | Клиенты | Удаление комментария к клиенту
+DELETE /api/v1/company/{company_id}/clients/files/{client_id}/{file_id} | Клиенты | Пример запроса на удаление
+DELETE /api/v1/company/{company_id}/sale/{document_id}/payment/loyalty_transaction/{payment_transaction_id} | Операция продажи | Удаление транзакции оплаты лояльностью
+DELETE /api/v1/company/{company_id}/sale/{document_id}/payment/payment_transaction/{payment_transaction_id} | Операция продажи | Удаление транзакции оплаты в кассу
+DELETE /api/v1/company/{company_id}/schedules/{schedule_id} | Расписания записей/событий | Удаление расписания
+DELETE /api/v1/company/{company_id}/schedules/{schedule_id}/client_schedules/{client_schedule_id} | Расписания записей/событий | Удаление графика посещений клиента
+DELETE /api/v1/company/{company_id}/schedules/{schedule_id}/days/{day_id} | Расписания записей/событий | Удаление серии расписания
+DELETE /api/v1/company/{company_id}/services/{service_id}/staff/{master_id} | Услуги | Отвязка сотрудника, оказывающего услугу
+DELETE /api/v1/company/{company_id}/users/{user_id} | Пользователи компании | Удалить пользователя в компании
+DELETE /api/v1/company/{id}/ | Компании | Удалить компанию
+DELETE /api/v1/custom_fields/{field_category}/{company_id}/{field_id} | Дополнительные поля | Удаление дополнительного поля из филиала
+DELETE /api/v1/finance_transactions/{company_id}/{transaction_id} | Финансовые транзакции | Удаление транзакции
+DELETE /api/v1/goods_categories/{company_id}/{category_id} | Категории товаров | Удалить категорию товаров
+DELETE /api/v1/goods/{company_id}/{good_id} | Товары | Удалить товар
+DELETE /api/v1/images/{entity} | Изображения | Удаление изображений
+DELETE /api/v1/labels/{company_id}/{label_id} | Категории | Удалить категорию компании
+DELETE /api/v1/loyalty/cards/{company_id}/{card_id} | Карты лояльности | Удалить карту  лояльности
+DELETE /api/v1/record/{company_id}/{record_id} | Записи | Удалить запись
+DELETE /api/v1/service_category/{company_id}/{id} | Категория услуг | Удалить категорию услуг
+DELETE /api/v1/services/{company_id}/{service_id} | Услуги | Удалить услугу
+DELETE /api/v1/staff/{company_id}/{staff_id} | Сотрудники | Удалить сотрудника
+DELETE /api/v1/storage_operations/documents/{company_id}/{document_id} | Документы складских операций | Удалить документ
+DELETE /api/v1/storage_operations/goods_transactions/{company_id}/{transaction_id} | Товарные транзакции | Удаление транзакции
+DELETE /api/v1/technological_cards/record_consumables/technological_cards/{company_id}/{record_id}/{service_id} | Технологические карты и расходники | Удалить технологическую из связи запись-услуга
+DELETE /api/v1/user/records/{record_id}/{record_hash} | Записи пользователя | Удалить запись пользователя
+DELETE /api/v2/companies/{company_id}/waiting_list/{waiting_list_entry_id} | Лист ожидания | Удаление заявки в листе ожидания
+
+DELETE /api/v2/companies/{salonId}/activities/{activityId} | Групповые события v2 | Удаление события
+GET /api/v1/accounts/{company_id} | Кассы | Получить кассы компании
+GET /api/v1/activity/{company_id}/{activity_id} | Групповые события | Чтение группового события
+GET /api/v1/activity/{company_id}/duplication_strategy | Групповые события | Получение стратегий дублирования групповых событий
+GET /api/v1/activity/{company_id}/filters/ | Групповые события | Фильтры групповых событий
+GET /api/v1/activity/{company_id}/search_dates_range/ | Групповые события | Поиск диапазона дат групповых событий
+GET /api/v1/activity/{company_id}/search_dates/ | Групповые события | Поиск дат групповых событий
+GET /api/v1/activity/{company_id}/search/ | Групповые события | Поиск групповых событий
+GET /api/v1/activity/{company_id}/services?staff_id=1&term=test | Групповые события | Поиск групповых услуг
+GET /api/v1/attendance/receipt_print/{visit_id} | Визиты | Чек PDF по визиту
+GET /api/v1/book_dates/{company_id} | Онлайн-запись | Получить список дат доступных для бронирования
+GET /api/v1/book_record/{company_id}/{record_id}/{record_hash} | Онлайн-запись | Получить запись на сеанс
+GET /api/v1/book_services/{company_id} | Онлайн-запись | Получить список услуг доступных для бронирования
+GET /api/v1/book_staff_seances/{company_id}/{staff_id}/ | Онлайн-запись | Получить список ближайших доступных сеансов
+GET /api/v1/book_staff/{company_id} | Онлайн-запись | Получить список сотрудников доступных для бронирования
+GET /api/v1/book_times/{company_id}/{staff_id}/{date} | Онлайн-запись | Получить список сеансов доступных для бронирования
+GET /api/v1/bookform/{id} | Онлайн-запись | Получить настройки формы бронирования
+GET /api/v1/booking/user/data | Пользователи онлайн-записи | Получение данных пользователя онлайн-записи
+GET /api/v1/booking/user/phone_confirmation | Пользователи онлайн-записи | Отправить СМС код подтверждения номера телефона для изменения данных
+GET /api/v1/chain/{chain_id}/loyalty/abonements | Абонементы | Получить список абонементов по фильтру
+GET /api/v1/chain/{chain_id}/loyalty/card_types | Карты лояльности | Получить список типов карт, доступных в сети
+GET /api/v1/chain/{chain_id}/loyalty/notification_message_templates/programs | Лояльность | Получить список шаблонов уведомлений лояльности
+GET /api/v1/chain/{chain_id}/loyalty/programs/{loyalty_program_id} | Лояльность | Получить акцию в сети
+GET /api/v1/chain/{chain_id}/loyalty/transactions | Лояльность | Получить список транзакций лояльности в сети
+GET /api/v1/chain/{chain_id}/service_categories | Категория услуг | Получить список категорий услуг сети
+GET /api/v1/cities?country_id=1&company_id=1 | Города | Получить список городов
+GET /api/v1/client/{company_id}/{id} | Клиенты | Получить клиента
+GET /api/v1/clients/{company_id} | Клиенты | Устаревшее. Получить список клиентов
+GET /api/v1/comments/{company_id}/ | Комментарии | Получить комментарии
+GET /api/v1/companies | Компании | Получить список компаний
+GET /api/v1/company_users/{company_id} | Пользователи компании | Устаревшее. Получить пользователей компании
+GET /api/v1/company/{company_id}/analytics/loyalty_programs/income/ | Лояльность | Получить статистику по выручке
+GET /api/v1/company/{company_id}/analytics/loyalty_programs/staff/ | Лояльность | Получить возвращаемость по сотруднику
+GET /api/v1/company/{company_id}/analytics/loyalty_programs/visits | Лояльность | Получить статистику по клиентам
+GET /api/v1/company/{company_id}/analytics/overall/ | Аналитика | Получить основные показатели компании
+GET /api/v1/company/{company_id}/analytics/overall/charts/fullness_daily/ | Аналитика | Получить данные о заполненности в разрезе по дням
+GET /api/v1/company/{company_id}/analytics/overall/charts/income_daily/ | Аналитика | Получить данные о выручке в разрезе по дням
+GET /api/v1/company/{company_id}/analytics/overall/charts/record_source/ | Аналитика | Получить структуру записей по источникам
+GET /api/v1/company/{company_id}/analytics/overall/charts/record_status/ | Аналитика | Получить структуру записей по статусам визитов
+GET /api/v1/company/{company_id}/analytics/overall/charts/records_daily/ | Аналитика | Получить данные о количестве записей в разрезе по дням
+GET /api/v1/company/{company_id}/booking_forms/ | Настройки букформы | Получить список букформ
+GET /api/v1/company/{company_id}/booking_forms/{form_id}/ | Настройки букформы | Получить букформу
+GET /api/v1/company/{company_id}/client/{client_id}/loyalty/abonements/{abonement_id}/check_for_activity/ | Расписания записей/событий | Проверка абонемента на количество доступных записей и последнюю дату записи
+GET /api/v1/company/{company_id}/client/{client_id}/loyalty/abonements/search_for_activity/ | Расписания записей/событий | Чтение доступных абонементов
+GET /api/v1/company/{company_id}/clients/{client_id}/comments | Клиенты | Получение списка комментариев к клиенту
+GET /api/v1/company/{company_id}/clients/files/{client_id} | Клиенты | Пример запроса на получение списка файлов клиента
+GET /api/v1/company/{company_id}/goods_categories/{parent_category_id} | Категории товаров | Пример запроса на получение категорий
+GET /api/v1/company/{company_id}/loyalty/abonement_types/fetch | Лояльность | Получить список типов абонементов по идентификатору
+GET /api/v1/company/{company_id}/loyalty/abonement_types/search | Лояльность | Получить список доступных типов абонементов
+GET /api/v1/company/{company_id}/loyalty/certificate_types/fetch | Лояльность | Получить список типов сертификатов по идентификатору
+GET /api/v1/company/{company_id}/loyalty/certificate_types/search | Лояльность | Получить список доступных типов сертификатов
+GET /api/v1/company/{company_id}/loyalty/programs/search | Лояльность | Получить список акций, действующих в филиале
+GET /api/v1/company/{company_id}/salary/calculation/staff/{staff_id}/ | Расчёт зарплат | Получение взаиморасчётов с сотрудником
+GET /api/v1/company/{company_id}/salary/calculation/staff/{staff_id}/salary_schemes_count/ | Расчёт зарплат | Получение количества схем расчёта зарплат у сотрудника
+GET /api/v1/company/{company_id}/salary/calculation/staff/daily/{staff_id}/ | Расчёт зарплат | Получение взаиморасчётов с сотрудником в разрезе по дате
+GET /api/v1/company/{company_id}/salary/payroll/staff/{staff_id}/calculation/ | Расчёт зарплат | Поиск начислений по сотруднику
+GET /api/v1/company/{company_id}/salary/payroll/staff/{staff_id}/calculation/{calculation_id} | Расчёт зарплат | Получение данных о начислении по сотруднику
+GET /api/v1/company/{company_id}/salary/period/staff/{staff_id}/ | Расчёт зарплат | Получение расчёта зарплаты за период по сотруднику
+GET /api/v1/company/{company_id}/salary/period/staff/daily/{staff_id}/ | Расчёт зарплат | Получение расчёта зарплаты за период по сотруднику в разрезе по дате
+GET /api/v1/company/{company_id}/salary/staff/{staff_id}/calculation/ | Расчёт зарплат | Получение собственных взаиморасчётов сотрудника с филиалом
+GET /api/v1/company/{company_id}/salary/staff/{staff_id}/period/ | Расчёт зарплат | Получение расчёта собственной зарплаты за период
+GET /api/v1/company/{company_id}/salary/staff/{staff_id}/salary_schemes/ | Расчёт зарплат | Получение собственных схем расчёта зарплат
+GET /api/v1/company/{company_id}/sale/{document_id} | Операция продажи | Получение Операции продажи
+GET /api/v1/company/{company_id}/schedules/{schedule_id}/days/{day_id}/events | Расписания записей/событий | Получение списка сущностей записей/событий в рамках серии расписания
+GET /api/v1/company/{company_id}/schedules/search/{entity_type}/{entity_id} | Расписания записей/событий | Поиск расписания по сущности
+GET /api/v1/company/{company_id}/service_categories/{id} | Категория услуг | Получить список категорий услуг
+GET /api/v1/company/{company_id}/services/{service_id} | Услуги | Получить список услуг / конкретную услугу
+GET /api/v1/company/{company_id}/settings/online | Настройки онлайн-записи | Получение настроек онлайн-записи
+GET /api/v1/company/{company_id}/settings/timeslots | Онлайн-запись | Получить настройки таймслотов филиала
+GET /api/v1/company/{company_id}/settings/timetable | Настройки журнала записи | Получение настроек журнала записи
+GET /api/v1/company/{company_id}/staff/{staff_id} | Сотрудники | Получить список сотрудников / конкретного сотрудника
+GET /api/v1/company/{company_id}/staff/positions/ | Должности | Получить список должностей компании
+GET /api/v1/company/{company_id}/staff/schedule | График работы сотрудника | Получение графиков работы сотрудников
+GET /api/v1/company/{company_id}/users | Пользователи компании | Получить пользователей компании
+GET /api/v1/company/{company_id}/users/{user_id}/permissions | Пользователи | Получение значений прав и роли пользователя
+GET /api/v1/company/{company_id}/users/{user_id}/roles | Пользователи | Получение списка ролей в контексте существующего пользователя
+GET /api/v1/company/{company_id}/users/roles | Пользователи | Получение списка ролей пользователей
+GET /api/v1/company/{id}/ | Компании | Получить компанию
+GET /api/v1/countries | Страны | Получить список стран
+GET /api/v1/custom_fields/{field_category}/{company_id} | Дополнительные поля | Получение коллекции полей филиала
+GET /api/v1/deposits/chain/{chain_id} | Личные счета | Получение списка личных счетов по сети и набору фильтров
+GET /api/v1/deposits/chain/{chain_id}/deposit_history/{deposit_id} | Личные счета | Получение истории операции личного счета
+GET /api/v1/deposits/chain/{chain_id}/phone/{phone} | Личные счета | Получение списка личных счетов по сети и номеру телефона клиента
+GET /api/v1/deposits/company/{company_id}/client/{client_id} | Личные счета | Получение списка личных счетов по филиалу и клиенту
+GET /api/v1/finance_transactions/{company_id}/{transaction_id} | Финансовые транзакции | Получение финансовой транзакции
+GET /api/v1/goods_categories/{company_id}/{parent_category_id} | Категории товаров | Получить список категорий товаров
+GET /api/v1/goods_categories/multiple/{company_id} | Категории товаров | Получить список категорий товаров по идентификатору
+GET /api/v1/goods/{company_id}/{good_id} | Товары | Получить товары
+GET /api/v1/goods/category_node/{company_id}/{category_id}?page={page}&count={count} | Категории товаров | Пример запроса на получение состава категории
+GET /api/v1/goods/search/{company_id}?term={search_term}&count={max_count} | Категории товаров | Пример запроса на получение списка
+GET /api/v1/group/{group_id}/clients/ | Сетевые клиенты | Получить сетевого клиента по номеру телефона.
+GET /api/v1/groups | Сети салонов | Получение доступных пользователю сетей
+GET /api/v1/i18n/{langCode} | Онлайн-запись | Получить параметры интернационализации
+GET /api/v1/integration/kkm/references/tax_system/{countryId} | Фискализация чеков | Пример запроса на получение списка
+GET /api/v1/kkm_transactions/{company_id} | ККМ транзакции | Получить транзакции
+GET /api/v1/labels/{company_id}/{entity} | Категории | Получить категории компании
+GET /api/v1/labels/{company_id}/clients | Категории | Получить клиентские категории с поиском по названию
+GET /api/v1/license/{company_id} | Лицензии | Получение информация о лицензии компании
+GET /api/v1/loyalty/abonements/ | Абонементы | Получить абонементы клиента
+GET /api/v1/loyalty/card_types/client/{company_id}/{phone} | Карты лояльности | Получить список типов карт доступных для выдачи клиенту
+GET /api/v1/loyalty/card_types/salon/{company_id} | Карты лояльности | Получить список типов карт доступных в филиале
+GET /api/v1/loyalty/cards/{phone}/{group_id}/{company_id} | Карты лояльности | Получить список карт клиента по номеру телефона
+GET /api/v1/loyalty/certificates/ | Сертификаты | Получить сертификаты клиента
+GET /api/v1/loyalty/client_cards/{client_id} | Карты лояльности | Получить список карт клиента по ID
+GET /api/v1/loyalty/generate_code/{company_id}/{good_Id} | Лояльность | Генерация кода сертификата/абонемента
+GET /api/v1/master_record_review/{recordToken} | Отзывы и чаевые | Получение статуса формы отзыва
+GET /api/v1/notification_settings/{company_id}/notification_types | Уведомления | Получить настройки уведомлений в филиале
+GET /api/v1/notification_settings/{company_id}/users/{user_id} | Уведомления | Получить настройки уведомлений пользователя
+GET /api/v1/privacy_policy/{company_id} | Правила обработки персональных данных | Получение информация о правилах обработки персональных данных компании
+GET /api/v1/record/{company_id}/{record_id} | Записи | Получить запись
+GET /api/v1/records/{company_id} | Записи | Получить список записей
+GET /api/v1/records/partner/ | Записи | Получить список записей партнёра
+GET /api/v1/references/business_groups_with_types | Справочники | Получить бизнес-типы по группам
+GET /api/v1/reports/z_report/{company_id} | Z-Отчет | Получить данные Z-Отчета
+GET /api/v1/resources/{company_id} | Ресурсы | Получение ресурсов в филиале
+GET /api/v1/schedule/{company_id}/{staff_id}/{start_date}/{end_date} | График работы сотрудника | Устаревшее. Получить расписание сотрудника
+GET /api/v1/service_categories/{company_id}/{id} | Категория услуг | Устаревшее. Получить список категорий услуг
+GET /api/v1/service_category/{company_id}/{id} | Категория услуг | Получить категорию услуг
+GET /api/v1/services/{company_id}/{service_id} | Услуги | Устаревшее. Получить список услуг / конкретную услугу
+GET /api/v1/staff/{company_id}/{staff_id} | Сотрудники | Устаревшее. Получить список сотрудников / конкретного сотрудника
+GET /api/v1/storage_operations/documents/{company_id}/{document_id} | Документы складских операций | Получить документ
+GET /api/v1/storage_operations/documents/finance_transactions/{document_id} | Документы складских операций | Получить финансовые транзакции документа
+GET /api/v1/storage_operations/documents/goods_transactions/{document_id} | Документы складских операций | Получить товарные транзакции документа
+GET /api/v1/storage_operations/goods_transactions/{company_id}/{transaction_id} | Товарные транзакции | Получение транзакции
+GET /api/v1/storages/{company_id} | Склады | Получить склады компании
+GET /api/v1/storages/transactions/{company_id} | Товарные транзакции | Поиск товарных транзакций
+GET /api/v1/technological_cards/{company_id}/ | Технологические карты и расходники | Получить список тех карт
+GET /api/v1/technological_cards/default_for_staff_and_service/{company_id}/{staffId}/{serviceId}/ | Технологические карты и расходники | Получить тех карту для связи сотрудник услуга
+GET /api/v1/technological_cards/record_consumables/{company_id}/{record_id}/ | Технологические карты и расходники | Получить список тех карт и расходников записи
+GET /api/v1/timetable/dates/{company_id}/{date} | Даты для журнала | Получить список дат для журнала
+GET /api/v1/timetable/seances/{company_id}/{staff_id}/{date} | Сеансы для журнала | Получить список сеансов для журнала
+GET /api/v1/timetable/transactions/{company_id} | Финансовые транзакции | Получение транзакций по ID визита или записи
+GET /api/v1/tips/{company_id}/settings | Чаевые | Получить список мастеров салона с их настройками чаевых
+GET /api/v1/tips/{company_id}/settings/{master_tips_settings_id}/enable | Чаевые | Включить чаевые у мастера
+GET /api/v1/transactions/{company_id} | Финансовые транзакции | Получить транзакции
+GET /api/v1/user/loyalty_cards/{group_id} | Карты лояльности | Получить карты лояльности пользователя
+GET /api/v1/user/loyalty/abonements/ | Абонементы | Получить абонементы пользователя
+GET /api/v1/user/loyalty/certificates/ | Сертификаты | Получить сертификаты пользователя
+GET /api/v1/user/permissions/{company_id} | Пользователь | Получить список прав
+GET /api/v1/user/records/{record_id}/{record_hash} | Записи пользователя | Получить записи пользователя
+GET /api/v1/validation/validate_phone/{phone} | Валидация данных | Проверка формата номера телефона
+GET /api/v1/visit/details/{salon_id}/{record_id}/{visit_id} | Визиты | Получить детали визита
+GET /api/v1/visit/loyalty/transactions/{visit_id} | Применение лояльности в визите | Получить транзакции лояльности по визиту
+GET /api/v1/visits/{visit_id} | Визиты | Получить визит
+GET /api/v1/voip/integration/calls | Интеграция с сетевой телефонией | Получить список звонков филиала
+GET /api/v2/companies/{company_id}/waiting_list | Лист ожидания | Получить заявки в листе ожидания
+
+GET /api/v2/companies/{salonId}/activities/{activityId} | Групповые события v2 | Чтение события
+GET /marketplace/application/{application_id}/salons | Маркетплейс | Данные о салонах, подключивших приложение
+GET /marketplace/application/{application_id}/tariffs | Маркетплейс | Данные о тарифах приложения
+GET /marketplace/application/payment_link | Маркетплейс | Генерация ссылки на оплату
+GET /marketplace/salon/{salon_id}/application/{application_id} | Маркетплейс | Данные о подключении приложения в салоне
+PATCH /api/v1/chain/{chain_id}/loyalty/abonement_types/{loyalty_abonement_type_id} | Типы абонементов | Архивация/восстановление типа абонемента
+PATCH /api/v1/company/{company_id}/booking_forms/{form_id}/ | Настройки букформы | Изменить букформу
+PATCH /api/v1/company/{company_id}/schedules/{schedule_id} | Расписания записей/событий | Обновление расписания
+PATCH /api/v1/company/{company_id}/schedules/{schedule_id}/client_schedules/{client_schedule_id} | Расписания записей/событий | Обновление графика посещений клиента
+PATCH /api/v1/company/{company_id}/schedules/{schedule_id}/days/{day_id} | Расписания записей/событий | Обновление серии расписания
+PATCH /api/v1/company/{company_id}/services/{service_id} | Услуги | Изменить услугу
+PATCH /api/v1/company/{company_id}/settings/online | Настройки онлайн-записи | Обновление настроек онлайн-записи
+PATCH /api/v1/company/{company_id}/settings/timetable | Настройки журнала записи | Обновление настроек журнала записи
+POST /api/v1/ | Отправка СМС через операторов | Отправка СМС
+POST /api/v1/activity/{company_id} | Групповые события | Создание группового события
+POST /api/v1/activity/{company_id}/{activity_id}/book | Онлайн-запись | Создать запись в групповом событии
+POST /api/v1/activity/{company_id}/{activity_id}/duplicate/ | Групповые события | Запрос дублирования группового события
+POST /api/v1/activity/{company_id}/duplication_strategy | Групповые события | Создание шаблона дублирования группового события
+POST /api/v1/activity/{company_id}/duplication_strategy/{strategy_id} | Групповые события | Обновление шаблона дублирования группового события
+POST /api/v1/auth | Авторизация | Авторизовать пользователя
+POST /api/v1/book_check/{company_id} | Онлайн-запись | Проверить параметры записи
+POST /api/v1/book_code/{company_id} | Онлайн-запись,Пользователи онлайн-записи | Отправить СМС код подтверждения номера телефона
+POST /api/v1/book_record/{company_id} | Онлайн-запись | Создать запись на сеанс
+POST /api/v1/booking/auth | Пользователи онлайн-записи | Авторизовать пользователя онлайн-записи
+POST /api/v1/chain/{chain_id}/loyalty/abonement_types | Типы абонементов | Создание типа абонемента
+POST /api/v1/chain/{chain_id}/loyalty/abonement_types/{loyalty_abonement_type_id} | Типы абонементов | Восстановление удалённого типа абонемента
+POST /api/v1/chain/{chain_id}/loyalty/abonement_types/{loyalty_abonement_type_id}/clone | Типы абонементов | Клонирование типа абонемента по идентификатору
+POST /api/v1/chain/{chain_id}/loyalty/abonements/{abonementId}/freeze | Абонементы | Заморозить абонемент
+POST /api/v1/chain/{chain_id}/loyalty/abonements/{abonementId}/set_balance | Абонементы | Изменить количество использований абонемента
+POST /api/v1/chain/{chain_id}/loyalty/abonements/{abonementId}/set_period | Абонементы | Изменить длительность абонемента
+POST /api/v1/chain/{chain_id}/loyalty/abonements/{abonementId}/unfreeze | Абонементы | Разморозить абонемент
+POST /api/v1/chain/{chain_id}/loyalty/cards/{card_id}/manual_transaction | Карты лояльности | Ручное списание/пополнение карты лояльности в сети
+POST /api/v1/chain/{chain_id}/loyalty/programs/ | Лояльность | Создать акцию в сети
+POST /api/v1/clients/{company_id} | Клиенты | Добавить клиента
+POST /api/v1/clients/{company_id}/bulk | Клиенты | Массовое добавление клиентов
+POST /api/v1/comments/{company_id}/{staff_id} | Комментарии | Оставить комментарии
+POST /api/v1/companies | Компании | Создать компанию
+POST /api/v1/company/{company_id}/booking_forms/ | Настройки букформы | Создать букформу
+POST /api/v1/company/{company_id}/clients/{client_id}/comments | Клиенты | Добавление комментария к клиенту
+POST /api/v1/company/{company_id}/clients/search | Клиенты | Получить список клиентов
+POST /api/v1/company/{company_id}/clients/visits/search | Клиенты | Поиск по истории посещений клиента
+POST /api/v1/company/{company_id}/loyalty/cards/{card_id}/manual_transaction | Карты лояльности | Ручное списание/пополнение карты лояльности в компании
+POST /api/v1/company/{company_id}/positions/quick/ | Должности | Быстрое создание должности
+POST /api/v1/company/{company_id}/sale/{document_id}/payment | Операция продажи | Оплата в кассу и лояльностью (различными методами)
+POST /api/v1/company/{company_id}/schedules | Расписания записей/событий | Создание расписания
+POST /api/v1/company/{company_id}/schedules/{schedule_id}/client_schedules | Расписания записей/событий | Создание графика посещений клиента
+POST /api/v1/company/{company_id}/schedules/{schedule_id}/days | Расписания записей/событий | Создание серии расписания
+POST /api/v1/company/{company_id}/services/{service_id}/staff | Услуги | Привязка сотрудника, оказывающего услугу
+POST /api/v1/company/{company_id}/services/links | Услуги | Изменить длительность оказания услуги сотрудниками, технические карты, названия на других языках
+POST /api/v1/company/{company_id}/staff/quick | Сотрудники | Быстрое создание сотрудника
+POST /api/v1/company/{company_id}/users/{user_id}/copy_to_companies | Пользователи | Копирование пользователя в филиалы
+POST /api/v1/company/{company_id}/users/{user_id}/remove_from_companies | Пользователи | Удаление пользователя из филиалов
+POST /api/v1/custom_fields/{field_category}/{company_id} | Дополнительные поля | Добавление дополнительного поля
+POST /api/v1/delivery/status | Отправка СМС через операторов | Получение статусов сообщений
+POST /api/v1/deposits_operations/{salon_id} | Личные счета | Создание операции пополнения личного счёта
+POST /api/v1/email/clients/by_filter/{company_id} | Email рассылка | Отправить Email рассылку по клиентам, подходящим под фильтры
+POST /api/v1/email/clients/by_id/{company_id} | Email рассылка | Отправить Email рассылку по списку клиентов
+POST /api/v1/finance_transactions/{company_id} | Финансовые транзакции | Создание финансовой транзакции
+POST /api/v1/goods_categories/{company_id} | Категории товаров | Создать категорию товаров
+POST /api/v1/goods/{company_id} | Товары | Создать товар
+POST /api/v1/https://your-api.url | Фискализация чеков | Пример запроса на фискализацию документа
+POST /api/v1/images/{entity} | Изображения | Загрузка изображения
+POST /api/v1/integration/kkm/callback/ | Фискализация чеков | Пример запроса в случае успешной фискализации или в случае ошибка
+POST /api/v1/kkm_transactions/{company_id}/print_document_bill | ККМ транзакции | Напечатать чек
+POST /api/v1/labels/{company_id} | Категории | Создать категорию
+POST /api/v1/labels/{company_id}/clients/create | Категории | Создать клиентскую категорию компании
+POST /api/v1/loyalty/cards/{company_id} | Карты лояльности | Выдать карту лояльности
+POST /api/v1/master_record_review/{recordToken} | Отзывы и чаевые | Отправка формы отзыва
+POST /api/v1/notification_settings/{company_id}/users/{user_id} | Уведомления | Изменить настройки PUSH-уведомлений пользователя
+POST /api/v1/records/{company_id} | Записи | Создать новую запись
+POST /api/v1/service_categories/{company_id} | Категория услуг | Создать категорию услугу
+POST /api/v1/services/{company_id} | Услуги | Создать услугу
+POST /api/v1/sms/clients/by_filter/{company_id} | SMS рассылка | Отправить SMS рассылку по клиентам, подходящим под фильтры
+POST /api/v1/sms/clients/by_id/{company_id} | SMS рассылка | Отправить SMS рассылку по списку клиентов
+POST /api/v1/staff/{company_id} | Сотрудники | Устаревшее. Добавить нового сотрудника
+POST /api/v1/storage_operations/documents/{company_id} | Документы складских операций | Создать документ
+POST /api/v1/storage_operations/goods_transactions/{company_id} | Товарные транзакции | Создать транзакцию
+POST /api/v1/storage_operations/operation/{company_id} | Складские операции | Создание складской операции
+POST /api/v1/tips/{company_id}/settings/{master_tips_settings_id}/disable | Чаевые | Отключить чаевые у мастера
+POST /api/v1/user/auth | Пользователи онлайн-записи | Авторизоваться по номеру телефона и коду
+POST /api/v1/user/invite/{salon_id} | Пользователь | Создание и отправка приглашения
+POST /api/v1/visit/loyalty/apply_card_withdrawal/{company_id}/{card_id} | Применение лояльности в визите | Применить списание с карты лояльности в визите
+POST /api/v1/visit/loyalty/apply_discount_program/{company_id}/{card_id}/{program_id} | Применение лояльности в визите | Применить акцию скидки в визите
+POST /api/v1/visit/loyalty/apply_referral_program/{company_id}/{group_id} | Применение лояльности в визите | Применить реферальную программу в записи
+POST /api/v1/visit/loyalty/cancel_card_withdrawal/{company_id}/{card_id} | Применение лояльности в визите | Отменить списание с карты лояльности в визите
+POST /api/v1/visit/loyalty/cancel_discount_program/{company_id}/{card_id}/{program_id} | Применение лояльности в визите | Отменить применение акции скидки в визите
+POST /api/v1/voip/integration | Интеграция с сетевой телефонией | События телефонии
+POST /api/v2/companies/{company_id}/waiting_list | Лист ожидания | Создание заявки в листе ожидания
+
+POST /api/v2/companies/{salonId}/activities | Групповые события v2 | Создание события
+POST /api/v2/companies/{salonId}/activities/{activityId}/records | Групповые события v2 | Создание записи в событии
+POST /api/v2/companies/{salonId}/activities/{activityId}/records/{recordId} | Групповые события v2 | Создание записи в событии
+POST /marketplace_webhook | Маркетплейс | Вебхук из YCLIENTS о событиях
+POST /marketplace/application/add_discount | Маркетплейс | Установить скидку салонам на оплату
+POST /marketplace/application/update_channel | Маркетплейс | Изменение доступности каналов отправки
+POST /marketplace/partner/callback | Маркетплейс | Установка приложения для филиала
+POST /marketplace/partner/callback/redirect | Маркетплейс | Адрес для редиректа пользователя после регистрации в сервисе-партнере
+POST /marketplace/partner/payment | Маркетплейс | Уведомление YCLIENTS об успешном платеже
+POST /marketplace/partner/payment/refund/{payment_id} | Маркетплейс | Уведомление о возврате платежа
+POST /marketplace/partner/short_names | Маркетплейс | Оповещение YCLIENTS о доступных именах отправителя SMS-сообщений
+POST /marketplace/salon/{salon_id}/application/{application_id}/uninstall | Маркетплейс | Отключение приложения
+PUT /api/v1/activity/{company_id}/{activity_id} | Групповые события | Обновление группового события
+PUT /api/v1/book_record/{company_id}/{record_id} | Онлайн-запись | Перенести запись на сеанс
+PUT /api/v1/booking/user | Пользователи онлайн-записи | Обновление данных пользователя онлайн-записи
+PUT /api/v1/booking/user/password | Пользователи онлайн-записи | Обновление пароля пользователя онлайн-записи
+PUT /api/v1/chain/{chain_id}/loyalty/abonement_types/{loyalty_abonement_type_id} | Типы абонементов | Обновление типа абонемента
+PUT /api/v1/chain/{chain_id}/loyalty/programs/{loyalty_program_id} | Лояльность | Изменить акцию в сети
+PUT /api/v1/client/{company_id}/{id} | Клиенты | Редактировать клиента
+PUT /api/v1/company/{company_id}/services/{service_id}/staff/{master_id} | Услуги | Изменение настроек оказания услуги сотрудником
+PUT /api/v1/company/{company_id}/staff/schedule | График работы сотрудника | Установка графиков работы сотрудников
+PUT /api/v1/company/{company_id}/users/{user_id}/permissions | Пользователи | Обновление прав и роли пользователя
+PUT /api/v1/company/{id}/ | Компании | Изменить компанию
+PUT /api/v1/custom_fields/{field_category}/{company_id}/{field_id} | Дополнительные поля | Обновление дополнительного поля
+PUT /api/v1/finance_transactions/{company_id}/{transaction_id} | Финансовые транзакции | Обновление финансовой транзакции
+PUT /api/v1/goods_categories/{company_id}/{category_id} | Категории товаров | Редактировать категорию товаров
+PUT /api/v1/goods/{company_id}/{good_id} | Товары | Редактировать товар
+PUT /api/v1/labels/{company_id}/{label_id} | Категории | Обновить категорию
+PUT /api/v1/record/{company_id}/{record_id} | Записи | Изменить запись
+PUT /api/v1/schedule/{company_id}/{staff_id} | График работы сотрудника | Устаревшее. Изменить расписание работы сотрудника
+PUT /api/v1/service_category/{company_id}/{id} | Категория услуг | Изменить категорию услуг
+PUT /api/v1/services/{company_id}/{service_id} | Услуги | Устаревшее. Изменить услугу
+PUT /api/v1/staff/{company_id}/{staff_id} | Сотрудники | Изменить сотрудника
+PUT /api/v1/storage_operations/documents/{company_id}/{document_id} | Документы складских операций | Обновить документ
+PUT /api/v1/storage_operations/goods_transactions/{company_id}/{transaction_id} | Товарные транзакции | Обновление транзакции
+PUT /api/v1/technological_cards/record_consumables/consumables/{company_id}/{record_id}/{service_id}/ | Технологические карты и расходники | Изменить список расходников связи запись-услуга
+PUT /api/v1/visits/{visit_id}/{record_id} | Визиты | Изменить визит
+PUT /api/v2/companies/{company_id}/waiting_list/{waiting_list_entry_id} | Лист ожидания | Обновление заявки в листе ожидания
+
+PUT /api/v2/companies/{salonId}/activities/{activityId} | Групповые события v2 | Обновление события

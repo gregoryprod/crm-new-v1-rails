@@ -1,0 +1,83 @@
+<% content_for :title, "Заявки — CRM VetPetCare" %>
+<%= render "shared/crm_header", user: current_user %>
+<main class="content wide">
+  <h1>Заявки</h1>
+  <form class="filters" method="get" action="/crm/leads" role="search" aria-label="Фильтр заявок">
+    <div class="field">
+      <label for="f-q">Поиск: телефон или ФИО</label>
+      <input id="f-q" name="q" type="search" maxlength="100" value="<%= @query.q %>">
+    </div>
+    <div class="field">
+      <label for="f-status">Статус</label>
+      <select id="f-status" name="status">
+        <option value="">Все</option>
+        <% Lead::STATUSES.each do |status| %><option value="<%= status %>" <%= "selected" if @query.status == status %>><%= status_label(status) %></option><% end %>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-from">Дата с</label>
+      <input id="f-from" name="from" type="date" value="<%= @query.from %>">
+    </div>
+    <div class="field">
+      <label for="f-to">Дата по</label>
+      <input id="f-to" name="to" type="date" value="<%= @query.to %>">
+    </div>
+    <div class="field">
+      <label for="f-source">Источник (utm_source)</label>
+      <input id="f-source" name="source" type="text" maxlength="100" value="<%= @query.source %>">
+    </div>
+    <div class="filter-actions">
+      <button class="button" type="submit">Применить</button>
+      <% if @filtered %><a class="button secondary" href="/crm/leads">Сбросить</a><% end %>
+    </div>
+  </form>
+
+  <% if @invalid.any? %>
+    <p class="notice" role="status">Некорректные параметры фильтра проигнорированы: <%= @invalid.map { |name| LeadsController::FILTER_LABELS.fetch(name, name) }.join(", ") %>.</p>
+  <% end %>
+
+  <% if @result["total"].zero? %>
+    <section class="empty" aria-live="polite">
+      <% if @filtered %>
+        <h2>Ничего не найдено</h2>
+        <p>Измените условия фильтра или сбросьте его.</p>
+      <% else %>
+        <h2>Заявок пока нет</h2>
+        <p>Новые заявки из квиза появятся здесь.</p>
+      <% end %>
+    </section>
+  <% else %>
+    <p class="muted">Найдено: <%= @result["total"] %>. Время указано в часовом поясе <%= crm_time_zone %>.</p>
+    <% if @result["rows"].empty? %>
+      <p class="notice" role="status">На этой странице заявок нет. <a href="<%= page_href(@query, 1) %>">К первой странице</a></p>
+    <% end %>
+    <table class="leads-table">
+      <thead>
+        <tr><th scope="col">Дата</th><th scope="col">Владелец</th><th scope="col">Телефон</th><th scope="col">Питомец</th><th scope="col">Статус</th><th scope="col">Ответственный</th><th scope="col">Источник</th></tr>
+      </thead>
+      <tbody>
+        <% @result["rows"].each do |lead| %>
+          <tr>
+            <td data-label="Дата"><a href="/crm/leads/<%= lead["id"] %>"><%= format_date_time(lead["createdAt"]) %></a></td>
+            <td data-label="Владелец">
+              <a href="/crm/leads/<%= lead["id"] %>"><%= lead["lastName"] %> <%= lead["firstName"] %></a>
+              <% if lead["possibleDuplicate"] %><span class="badge warn">возможный дубль</span><% end %>
+            </td>
+            <td data-label="Телефон"><%= format_phone(lead["phone"]) %></td>
+            <td data-label="Питомец"><%= lead["species"] %></td>
+            <td data-label="Статус"><span class="badge status-<%= lead["status"].downcase %>"><%= status_label(lead["status"]) %></span></td>
+            <td data-label="Ответственный"><%= lead["assignedName"] || "—" %></td>
+            <td data-label="Источник"><%= lead["utmSource"] || "—" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @result["pages"] > 1 %>
+      <nav class="pagination" aria-label="Страницы">
+        <% if @result["page"] > 1 %><a class="button secondary" href="<%= page_href(@query, @result["page"] - 1) %>" rel="prev">← Назад</a><% else %><span></span><% end %>
+        <span>Страница <%= [ @result["page"], @result["pages"] ].min %> из <%= @result["pages"] %></span>
+        <% if @result["page"] < @result["pages"] %><a class="button secondary" href="<%= page_href(@query, @result["page"] + 1) %>" rel="next">Вперёд →</a><% else %><span></span><% end %>
+      </nav>
+    <% end %>
+  <% end %>
+</main>

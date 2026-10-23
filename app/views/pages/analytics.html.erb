@@ -1,0 +1,15 @@
+<% content_for :title, "Аналитика — CRM VetPetCare" %>
+<%= render "shared/crm_header", user: current_user %>
+<main class="content">
+  <h1>Аналитика</h1>
+  <form method="get" class="calendar-toolbar">
+    <label>Оплаты с<input name="from" type="date" value="<%= @filter["from"] %>"></label>
+    <label>Оплаты по<input name="to" type="date" value="<%= @filter["to"] %>"></label>
+    <label>Врач<select name="doctorId">
+      <option value="">Все врачи</option>
+      <% @doctors.each do |id, name| %><option value="<%= id %>" <%= "selected" if @filter["doctorId"] == id %>><%= name %></option><% end %>
+    </select></label>
+    <button class="button">Применить</button>
+  </form>
+  <%= render "shared/payments_table", rows: @rows, client: false %>
+</main>

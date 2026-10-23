@@ -1,0 +1,27 @@
+# One PostgreSQL database. Connection settings come from DATABASE_URL (all environments)
+# and TEST_DATABASE_URL (tests); the session time zone is pinned to UTC.
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i + 2 %>
+  connect_timeout: 5
+  variables:
+    timezone: UTC
+  # Relative on purpose: absolute paths with glob characters (the local {vpc} folder)
+  # would hide the migration files from Dir.glob.
+  migrations_paths: db/migrate
+
+development:
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] %>
+  database: vpc_crm_development
+
+# The test database is wiped by the test suite: never point it at real data.
+test:
+  <<: *default
+  url: <%= ENV["TEST_DATABASE_URL"] %>
+  database: vpc_crm_test
+
+production:
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] %>

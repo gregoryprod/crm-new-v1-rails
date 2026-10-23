@@ -1,0 +1,19 @@
+<% content_for :title, "Вход — CRM VetPetCare" %>
+<main class="auth-page">
+  <section class="card" aria-labelledby="login-title">
+    <h1 id="login-title">Вход в CRM</h1>
+    <p class="subtitle">VetPetCare — панель сотрудников</p>
+    <%= form_with url: "/login", method: :post, data: { turbo: false } do |f| %>
+      <% if @error %><p class="error" role="alert"><%= @error %></p><% end %>
+      <div class="field">
+        <%= f.label :email, "Email" %>
+        <%= f.email_field :email, value: @email, autocomplete: "username", required: true, maxlength: 320 %>
+      </div>
+      <div class="field">
+        <%= f.label :password, "Пароль" %>
+        <%= f.password_field :password, autocomplete: "current-password", required: true, maxlength: 256 %>
+      </div>
+      <%= f.submit "Войти", class: "button full", data: { disable_with: "Входим…" } %>
+    <% end %>
+  </section>
+</main>

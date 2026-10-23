@@ -1,0 +1,188 @@
+# Extracted from landing/DESIGN.md; see design-reference.md for provenance.
+name: VetPetCare v09 «Tiles»
+description: Спокойная служба заботы — тёплый холст, один оранжевый голос, рукописные пометки врача.
+colors:
+  brand-orange: "#c1521e"
+  orange-deep: "#a2410f"
+  orange-soft: "#f2d8ca"
+  orange-glow: "#ec7a44"
+  tile-terracotta: "#e8b69b"
+  brand-white: "#efece3"
+  card-paper: "#f8f6f0"
+  sheet-linen: "#e5e0d3"
+  tile-sand: "#e2dccd"
+  tile-stone: "#cfcbc2"
+  line-flax: "#d7d1c2"
+  brand-grey: "#757575"
+  ink-soft: "#595959"
+  graphite: "#45423e"
+  brand-black: "#161616"
+  shade-umber: "#16120e"
+  white: "#ffffff"
+  error: "#b3261e"
+typography:
+  display:
+    fontFamily: "Onest, system-ui, sans-serif"
+    fontSize: "clamp(2.1rem, min(4.6vw, 7.4svh), 4.3rem)"
+    fontWeight: 400
+    lineHeight: 1
+    letterSpacing: "-0.035em"
+  headline:
+    fontFamily: "Onest, system-ui, sans-serif"
+    fontSize: "clamp(2.05rem, 4.2vw, 3.5rem)"
+    fontWeight: 400
+    lineHeight: 1.02
+    letterSpacing: "-0.035em"
+  title-row:
+    fontFamily: "Onest, system-ui, sans-serif"
+    fontSize: "clamp(1.35rem, 2.6vw, 2.2rem)"
+    fontWeight: 400
+    lineHeight: 1.08
+    letterSpacing: "-0.025em"
+  title:
+    fontFamily: "Onest, system-ui, sans-serif"
+    fontSize: "clamp(1.2rem, 1.9vw, 1.6rem)"
+    fontWeight: 500
+    lineHeight: 1.15
+    letterSpacing: "-0.02em"
+  numeral:
+    fontFamily: "Onest, system-ui, sans-serif"
+    fontSize: "clamp(2.3rem, 3.6vw, 3.3rem)"
+    fontWeight: 500
+    lineHeight: 1
+    letterSpacing: "-0.03em"
+    fontFeature: "\"tnum\", \"lnum\""
+  lead:
+    fontFamily: "Onest, system-ui, sans-serif"
+    fontSize: "clamp(1.05rem, 1.4vw, 1.2rem)"
+    fontWeight: 400
+    lineHeight: 1.55
+  body:
+    fontFamily: "Onest, system-ui, sans-serif"
+    fontSize: "17px"
+    fontWeight: 400
+    lineHeight: 1.55
+  label:
+    fontFamily: "Onest, system-ui, sans-serif"
+    fontSize: "13px"
+    fontWeight: 400
+    lineHeight: 1.4
+  button:
+    fontFamily: "Onest, system-ui, sans-serif"
+    fontSize: "16px"
+    fontWeight: 600
+    lineHeight: 1
+rounded:
+  r-xs: "10px"
+  r-sm: "14px"
+  r-md: "20px"
+  r-lg: "28px"
+  r-xl: "36px"
+  pill: "999px"
+  circle: "50%"
+spacing:
+  s1: "4px"
+  s2: "8px"
+  s3: "12px"
+  s4: "16px"
+  s5: "24px"
+  s6: "32px"
+  s7: "48px"
+  s8: "72px"
+  s9: "112px"
+  gut: "clamp(16px, 3vw, 40px)"
+  wrap: "1320px"
+components:
+  button-primary:
+    backgroundColor: "{colors.brand-orange}"
+    textColor: "{colors.white}"
+    typography: "{typography.button}"
+    rounded: "{rounded.pill}"
+    padding: "0 24px"
+    height: "52px"
+  button-primary-hover:
+    backgroundColor: "{colors.orange-deep}"
+    textColor: "{colors.white}"
+  button-primary-small:
+    backgroundColor: "{colors.brand-orange}"
+    textColor: "{colors.white}"
+    rounded: "{rounded.pill}"
+    padding: "0 18px"
+    height: "42px"
+  button-line:
+    backgroundColor: "transparent"
+    textColor: "{colors.brand-black}"
+    typography: "{typography.button}"
+    rounded: "{rounded.pill}"
+    padding: "0 24px"
+    height: "52px"
+  button-line-hover:
+    backgroundColor: "{colors.brand-black}"
+    textColor: "{colors.brand-white}"
+  button-round:
+    backgroundColor: "{colors.card-paper}"
+    textColor: "{colors.brand-black}"
+    rounded: "{rounded.circle}"
+    size: "48px"
+  hero-action:
+    backgroundColor: "{colors.brand-orange}"
+    textColor: "{colors.white}"
+    rounded: "{rounded.pill}"
+    padding: "6px 6px 6px 24px"
+    height: "60px"
+  quiz-option:
+    backgroundColor: "{colors.white}"
+    textColor: "{colors.brand-black}"
+    rounded: "{rounded.pill}"
+    padding: "12px 18px"
+  quiz-option-selected:
+    backgroundColor: "{colors.brand-orange}"
+    textColor: "{colors.white}"
+  quiz-card:
+    backgroundColor: "{colors.card-paper}"
+    rounded: "{rounded.r-lg}"
+    padding: "clamp(18px, 2.6vw, 30px)"
+  input-field:
+    backgroundColor: "{colors.white}"
+    textColor: "{colors.brand-black}"
+    rounded: "{rounded.r-sm}"
+    padding: "15px 18px"
+  tile:
+    backgroundColor: "{colors.sheet-linen}"
+    textColor: "{colors.brand-black}"
+    rounded: "{rounded.r-lg}"
+    padding: "clamp(18px, 2vw, 26px)"
+  doctor-card:
+    backgroundColor: "{colors.card-paper}"
+    textColor: "{colors.brand-black}"
+    rounded: "18px"
+    padding: "10px 10px 16px"
+  doctor-row-open:
+    backgroundColor: "{colors.brand-orange}"
+    textColor: "{colors.white}"
+    rounded: "{rounded.r-md}"
+  pill-tag:
+    backgroundColor: "{colors.orange-soft}"
+    textColor: "{colors.brand-black}"
+    rounded: "{rounded.pill}"
+    padding: "4px 10px"
+  sheet-section:
+    backgroundColor: "{colors.sheet-linen}"
+    rounded: "{rounded.r-xl}"
+    padding: "clamp(28px, 5vw, 64px)"
+  mts-panel:
+    backgroundColor: "{colors.graphite}"
+    textColor: "{colors.brand-white}"
+    rounded: "{rounded.r-xl}"
+    padding: "clamp(28px, 5vw, 64px)"
+  contact-widget:
+    backgroundColor: "{colors.card-paper}"
+    textColor: "{colors.brand-black}"
+    rounded: "{rounded.r-lg}"
+    padding: "28px 22px 20px"
+    width: "420px"
+  header-bar:
+    backgroundColor: "{colors.card-paper}"
+    textColor: "{colors.brand-black}"
+    rounded: "{rounded.pill}"
+    padding: "8px 8px 8px 12px"

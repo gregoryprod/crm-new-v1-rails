@@ -1,0 +1,42 @@
+# Секреты; шаблон с пустыми значениями можно версионировать.
+.env
+.env.*
+!.env.example
+
+# Сырые данные, производные выгрузки и локальное состояние агентов.
+/export/
+/База/
+/private/
+/data/
+/.orchestration/
+*.csv
+*.xlsx
+*.xls
+*.sqlite
+*.sqlite3
+*.db
+
+# Rails: журналы, временные файлы, ключи и собранные ассеты.
+/log/*
+!/log/.keep
+/tmp/*
+!/tmp/.keep
+/storage/*
+/public/assets
+/config/master.key
+/config/credentials/*.key
+# .kamal/secrets holds only $VARIABLE references; local value files stay ignored.
+/.kamal/secrets.local*
+/.kamal/*.env
+coverage/
+__pycache__/
+.DS_Store
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+.beads-credential-key
+.beads/proxieddb/
+*.gate.lock*
+
+# Browser QA runtime; screenshots and traces may contain private records.
+.playwright-cli/

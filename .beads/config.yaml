@@ -1,0 +1,5 @@
+issue-prefix: vpc-crm
+dolt:
+    mode: embedded
+sync:
+    remote: "git+https://github.com/artemiyvladimirov-cmyk/vpc-crm.git"

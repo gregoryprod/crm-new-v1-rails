@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "declarative-team-plan-not-a-runner",
+  "approved_by_owner": true,
+  "scope": "CRM v1 по ТЗ, этапами, дизайн VetPetCare landing",
+  "orchestrator": {
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "xhigh",
+    "responsibilities": [
+      "contracts and dependencies",
+      "single Beads writer",
+      "file ownership and worktrees",
+      "verification and checkpoints"
+    ]
+  },
+  "workers": {
+    "model": "gpt-6-luna",
+    "max_parallel_tasks": 2,
+    "responsibilities": [
+      "implement assigned bounded scenario",
+      "run task checks",
+      "report SHA and limitations"
+    ],
+    "shared_beads": "read-only"
+  },
+  "reviewer": {
+    "independent": true,
+    "read_only": true,
+    "default": "different tool or Human",
+    "reviews_exact_sha": true
+  },
+  "provider_access": "Must exist in Artem environment; no credentials bundled",
+  "merge_and_production": "Require direct owner command",
+  "automatic_dispatch": false,
+  "historical_implementation": {
+    "issue_3": "Claude Code, claude-opus-5-5",
+    "independent_review": "Codex"
+  }
+}

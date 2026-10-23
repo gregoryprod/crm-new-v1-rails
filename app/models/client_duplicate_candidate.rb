@@ -1,0 +1,2 @@
+class ClientDuplicateCandidate < ApplicationRecord
+end

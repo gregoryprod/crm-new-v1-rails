@@ -1,0 +1,64 @@
+name: Задача для оркестратора
+description: Один проверяемый результат с контекстом, исполнителем и приёмкой
+title: "[CRM] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: result
+    attributes:
+      label: Ожидаемое поведение
+      description: Какой полный сценарий должен заработать и зачем? Свяжи цель с context issue, требованиями или родительским issue; укажи основание поручения.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Критерии приемки
+      description: Проверяемые условия и команды проверки. Только синтетические данные.
+      placeholder: "- [ ] Сценарий ..."
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Границы и ответственность
+      description: Владелец файлов/контрактов, исполнитель, независимый проверяющий; разрешённые действия и что вне объёма. Для провайдера/модели проверь действующие полномочия.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Зависимости
+      description: Ссылки на блокирующие issues/PR или «нет». Для эпика перечисли дочерние задачи; эпик не запускают как вторую копию их работы.
+    validations:
+      required: true
+  - type: dropdown
+    id: work_type
+    attributes:
+      label: Тип работы
+      description: Перенеси в Work type существующего GitHub Project; context issue создаётся отдельно; для Epic добавь label epic. Контекст и эпики не исполняются.
+      options:
+        - Feature
+        - Bug
+        - Research
+        - Decision
+        - Operations
+        - Epic
+    validations:
+      required: true
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Предварительный размер
+      description: Относительная оценка для Effort в Projects, а не обещание срока или стоимости. L при необходимости разбей на самостоятельные сценарии.
+      options:
+        - S
+        - M
+        - L
+    validations:
+      required: true
+  - type: textarea
+    id: checkpoint
+    attributes:
+      label: Точка продолжения
+      description: Beads ID и external_ref; для продолжения — ссылка на последний checkpoint, ветка/SHA, последний Dolt push, ограничения и следующий шаг. Новая задача может оставить поле пустым.

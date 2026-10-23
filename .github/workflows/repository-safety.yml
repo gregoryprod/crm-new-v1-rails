@@ -1,0 +1,38 @@
+name: Repository safety
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'chore/**', 'fix/**', 'feat/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  repository-data:
+    name: repository-data
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify Git ignore and forced-add protection
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Check tracked data paths
+        run: python3 scripts/check-repository-data.py
+  export-safety:
+    name: export-safety (${{ matrix.os }})
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Exercise export destinations with synthetic data
+        shell: pwsh
+        run: ./tests/export-safety.ps1

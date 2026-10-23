@@ -1,0 +1,34 @@
+/* Reference tokens only; not imported into the CRM yet. See design-reference.md. */
+:root {
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px;
+  --s6: 32px; --s7: 48px; --s8: 72px; --s9: 112px;
+  --r-xs: 10px; --r-sm: 14px; --r-md: 20px; --r-lg: 28px; --r-xl: 36px;
+  --wrap: 1320px;
+  --gut: clamp(16px, 3vw, 40px);
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --font: "Onest", system-ui, sans-serif;
+
+  /* бренд */
+  --brand-orange: #c1521e;
+  --brand-grey: #757575;
+  --brand-white: #efece3;
+  --brand-black: #161616;
+  --graphite: #45423e;             /* тёплый графит — мягче чёрного: плитки направлений, «Мне только спросить» */
+
+  --bg: var(--brand-white);        /* холст страницы */
+  --page: var(--brand-white);
+  --card: #f8f6f0;                 /* поверхности поверх холста: формы, карточки */
+  --sheet: #e5e0d3;                /* листы-секции */
+  --ink: var(--brand-black);
+  --ink-2: #595959;                /* вторичный текст: #757575 темнее на ступень ради AA на #EFECE3 */
+  --grey: var(--brand-grey);       /* линии, иконки, декор */
+  --line: #d7d1c2;
+  --accent: var(--brand-orange);
+  --accent-ink: #ffffff;
+  --accent-deep: #a2410f;
+  --accent-soft: #f2d8ca;
+  --mark: var(--brand-orange);     /* рукописные штрихи */
+  --mark-dark: #ec7a44;            /* штрихи на тёмном фото */
+  --shade: 22 18 14;               /* тёплый чёрный для затемнений */
+  --shadow: 0 18px 40px -18px rgb(40 26 14 / .28), 0 2px 6px rgb(40 26 14 / .07);
+}

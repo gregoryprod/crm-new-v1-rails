@@ -1,0 +1,1 @@
+ALTER TABLE "booking_receipts" ADD COLUMN "legacy_token_hash" text;

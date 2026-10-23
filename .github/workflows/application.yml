@@ -1,0 +1,60 @@
+name: Application
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'chore/**', 'fix/**', 'feat/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  application:
+    name: application (rails)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: vpc_ci
+          POSTGRES_USER: vpc_ci
+          POSTGRES_PASSWORD: ci_synthetic_only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U vpc_ci -d vpc_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    # Synthetic CI-only values; no production credentials are used here.
+    env:
+      RAILS_ENV: test
+      CI: "true"
+      TEST_DATABASE_URL: postgresql://vpc_ci:ci_synthetic_only@127.0.0.1:5432/vpc_ci
+      DATABASE_URL: postgresql://vpc_ci:ci_synthetic_only@127.0.0.1:5432/vpc_ci_dev
+      LANG: C.UTF-8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Install PostgreSQL client (schema load uses psql)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+      - name: Lint
+        run: bin/rubocop
+      - name: Security scan
+        run: bin/brakeman --no-pager --quiet
+      - name: Zeitwerk
+        run: bin/rails zeitwerk:check
+      - name: Schema from scratch (baseline migration over the Drizzle SQL)
+        run: |
+          RAILS_ENV=development bin/rails db:create db:migrate
+          git diff --exit-code db/structure.sql
+      - name: Tests (real PostgreSQL)
+        run: bin/rails db:test:prepare test
+      - name: Kamal configuration is valid
+        run: KAMAL_HOST=203.0.113.10 CRM_HOST=crm.example.test bin/kamal config > /dev/null

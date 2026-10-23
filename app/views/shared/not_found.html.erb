@@ -1,0 +1,8 @@
+<% content_for :title, "Не найдено — CRM VetPetCare" %>
+<%= render "shared/crm_header", user: current_user if current_user %>
+<main class="content">
+  <section class="empty" role="alert">
+    <h2>Страница не найдена</h2>
+    <p><a href="/crm">Вернуться в CRM</a></p>
+  </section>
+</main>

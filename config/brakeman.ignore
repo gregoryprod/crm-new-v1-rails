@@ -1,0 +1,17 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "5c6f43aa616f936c57c13aff82dbb75583c8a8612eb914b082c00a5935985d39",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/models/application_record.rb",
+      "line": 24,
+      "code": "connection.execute(((+\"INSERT INTO #{quoted_table_name} (#{rows.first.keys.map(&:to_s).map do\n connection.quote_column_name(c)\n end.join(\", \")}) VALUES #{rows.map do\n ((\"(\" + rows.first.keys.map(&:to_s).map do\n connection.quote(serialize_raw((row[c] or row[c.to_sym])))\n end.join(\", \")) + \")\")\n end.join(\", \")}\" << \" ON CONFLICT DO NOTHING\") << \" RETURNING #{connection.quote_column_name(returning)}\"))",
+      "confidence": "Medium",
+      "note": "Column names come from code (checked against the table) and are quoted with quote_column_name; every value goes through connection.quote."
+    }
+  ],
+  "brakeman_version": "8.1.0"
+}

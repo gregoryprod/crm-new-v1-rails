@@ -1,0 +1,273 @@
+<%
+  data = @data
+  revision = data["revision"]
+  days = Array.new(state["view"] == "week" ? 7 : 1) { |i| shift_day(state["day"], i) }
+  doctors = data["doctors"]
+  visible = doctors.select { |d| state["doctor"].nil? || d["id"] == state["doctor"] }
+  paid = data["payments"].map { |p| p["bookingId"] }.to_set
+  selected = @selected
+  payment = selected && data["payments"].find { |p| p["bookingId"] == selected["id"] }
+  locked = selected && (selected["status"] == "cancelled" || !%w[scheduled confirmed].include?(selected["attendance"]))
+  step = state["view"] == "week" ? 7 : 1
+%>
+<% content_for :title, "Расписание — CRM VetPetCare" %>
+<%= render "shared/crm_header", user: current_user %>
+<main class="content calendar-content">
+  <h1>Расписание</h1>
+  <p class="muted">Смены, перерывы и приёмы · время по Москве</p>
+
+  <%= form_with url: "/crm/calendar", method: :get, class: "calendar-toolbar", data: { turbo_action: "advance" } do %>
+    <label>Начало периода <input type="date" name="day" value="<%= state["day"] %>" required></label>
+    <label>Вид
+      <select name="view">
+        <option value="day" <%= "selected" if state["view"] == "day" %>>День</option>
+        <option value="week" <%= "selected" if state["view"] == "week" %>>Неделя</option>
+      </select>
+    </label>
+    <label>Врач
+      <select name="doctor">
+        <option value="">Все врачи</option>
+        <% doctors.each do |d| %><option value="<%= d["id"] %>" <%= "selected" if state["doctor"] == d["id"] %>><%= d["name"] %></option><% end %>
+      </select>
+    </label>
+    <button class="button secondary">Показать</button>
+    <a class="button secondary" href="<%= calendar_url_with("day" => shift_day(state["day"], -step)) %>">← Назад</a>
+    <a class="button secondary" href="<%= calendar_url_with("day" => shift_day(state["day"], step)) %>">Дальше →</a>
+    <a class="button secondary" href="<%= calendar_url_with %>">Обновить</a>
+  <% end %>
+
+  <% if doctors.empty? %><p class="notice">Врачей и смен пока нет. Внеси подтверждённый каталог ниже.</p><% end %>
+
+  <div class="calendar-scroll" role="region" aria-label="Календарь приёмов" tabindex="0">
+    <table class="calendar-table">
+      <thead><tr><th scope="col">Специалист</th><% days.each do |d| %><th scope="col"><%= day_label(d) %></th><% end %></tr></thead>
+      <tbody>
+        <% visible.each do |doctor| %>
+          <tr>
+            <th scope="row"><%= doctor["name"] %><small><%= doctor["specialty"] %></small></th>
+            <% days.each do |d| %>
+              <%
+                range = Calendar::Slots.day_range(d)
+                in_range = ->(x) { x["doctorId"] == doctor["id"] && x["start"] < range.end && x["end"] > range.start }
+                intervals = data["intervals"].select(&in_range)
+                bookings = data["bookings"].select(&in_range)
+              %>
+              <td>
+                <% if intervals.empty? && bookings.empty? %><span class="muted">Нет смен</span><% end %>
+                <% intervals.each do |i| %>
+                  <div class="calendar-interval">
+                    <%= i["kind"] == "shift" ? "Смена" : "Перерыв" %> <%= hm(i["start"]) %>–<%= hm(i["end"]) %>
+                    <%= form_with url: "/crm/calendar", method: :post, class: "inline-form" do %>
+                      <%= command_fields("remove_interval", revision) %>
+                      <%= hidden_field_tag :id, i["id"], id: nil %>
+                      <button aria-label="Удалить <%= i["kind"] == "shift" ? "смену" : "перерыв" %> <%= hm(i["start"]) %>" data-turbo-confirm="Удалить интервал?">×</button>
+                    <% end %>
+                  </div>
+                <% end %>
+                <% bookings.each do |b| %>
+                  <a class="calendar-booking <%= b["status"] == "cancelled" ? "calendar-cancelled" : "calendar-#{b["attendance"]}" %>"
+                     href="<%= calendar_url_with({ "selected" => b["id"], "service" => nil, "booking_day" => nil, "slots" => nil, "start" => nil, "q" => nil, "patient" => nil }) %>">
+                    <strong><%= hm(b["start"]) %>–<%= hm(b["end"]) %></strong>
+                    <span><%= b["clientName"] %> <%= b["clientFirstName"] %></span>
+                    <span><%= b["patientName"] || b["species"] %> · <%= b["title"] %></span>
+                    <span><%= appointment_status(b) %><%= " · оплачено" if paid.include?(b["id"]) %></span>
+                  </a>
+                <% end %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="calendar-editors">
+    <section class="panel">
+      <h2><%= selected ? "Приём" : "Новая запись" %></h2>
+      <% if selected %>
+        <p><%= selected["clientName"] %> <%= selected["clientFirstName"] %> · <%= selected["patientName"] || selected["species"] %> · <%= hm(selected["start"]) %> · <%= appointment_status(selected) %></p>
+        <a class="button secondary" href="<%= calendar_url_with({ "selected" => nil, "service" => nil, "booking_day" => nil, "slots" => nil, "start" => nil }) %>">Новая запись</a>
+
+        <div class="appointment-actions">
+          <a href="/crm/clients/<%= selected["clientId"] %>">Карточка клиента и оплаты →</a>
+          <% if selected["status"] == "active" %>
+            <div class="appointment-status-buttons">
+              <% CalendarHelper::NEXT_ATTENDANCE.fetch(selected["attendance"], []).each do |value| %>
+                <%= form_with url: "/crm/calendar", method: :post, class: "inline-form" do %>
+                  <%= command_fields("set_attendance", revision) %>
+                  <%= hidden_field_tag :id, selected["id"], id: nil %>
+                  <%= hidden_field_tag :expected_version, selected["version"], id: nil %>
+                  <%= hidden_field_tag :attendance, value, id: nil %>
+                  <button class="button <%= value == "completed" ? "" : "secondary" %>"><%= CalendarHelper::ATTENDANCE_ACTIONS[value] %></button>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+          <% if payment %>
+            <section class="appointment-payment">
+              <h3>Оплата сохранена · <%= rub(payment["amountCents"]) %></h3>
+              <p><%= Payment::METHOD_LABELS[payment["method"]] %> · <%= format_date_time_seconds(payment["paidAt"]) %></p>
+              <p class="muted">Отражена в карточке клиента и аналитике CRM.</p>
+            </section>
+          <% elsif selected["status"] == "active" && selected["attendance"] == "completed" %>
+            <%
+              amount = state["pay_amount"] || (selected["priceCents"] ? (selected["priceCents"] / 100.0).to_s.sub(/\.0\z/, "") : "")
+              method = Payment::METHOD_LABELS.key?(state["pay_method"]) ? state["pay_method"] : "card"
+              note = state["pay_note"].to_s
+              review = state["pay_review"] == "1" && amount.present?
+            %>
+            <% if review %>
+              <%= form_with url: "/crm/calendar", method: :post, class: "appointment-payment" do %>
+                <h3>Зафиксировать оплату услуги</h3>
+                <%= command_fields("record_payment", revision) %>
+                <%= hidden_field_tag :id, selected["id"], id: nil %>
+                <%= hidden_field_tag :expected_version, selected["version"], id: nil %>
+                <%= hidden_field_tag :amount, amount, id: nil %>
+                <%= hidden_field_tag :method, method, id: nil %>
+                <%= hidden_field_tag :payment_note, note, id: nil %>
+                <p role="status">Сохранить <%= rub((Float(amount.tr(",", "."), exception: false).to_f * 100 + 0.5).floor) %> · <%= Payment::METHOD_LABELS[method] %>?</p>
+                <button class="button">Подтвердить оплату</button>
+                <a class="button secondary" href="<%= calendar_url_with("pay_review" => nil) %>">Изменить</a>
+              <% end %>
+            <% else %>
+              <%= form_with url: "/crm/calendar", method: :get, class: "appointment-payment" do %>
+                <h3>Зафиксировать оплату услуги</h3>
+                <p class="muted">Фактически полученная сумма. Одна фиксация на приём; проверь сумму и способ перед сохранением.</p>
+                <% state.except("pay_amount", "pay_method", "pay_note", "pay_review").each do |key, value| %><%= hidden_field_tag key, value, id: nil %><% end %>
+                <%= hidden_field_tag :pay_review, "1", id: nil %>
+                <label>Оплачено, ₽<input required type="number" name="pay_amount" min="0.01" max="21474836.47" step="0.01" value="<%= amount %>"></label>
+                <label>Способ оплаты
+                  <select name="pay_method"><% Payment::METHOD_LABELS.each do |id, label| %><option value="<%= id %>" <%= "selected" if method == id %>><%= label %></option><% end %></select>
+                </label>
+                <label>Комментарий к оплате<textarea name="pay_note" maxlength="1000"><%= note %></textarea></label>
+                <button class="button">Проверить оплату</button>
+              <% end %>
+            <% end %>
+          <% end %>
+          <% if selected["attendance"] == "no_show" %><p class="muted">Неявка: оплата услуги недоступна.</p><% end %>
+        </div>
+      <% else %>
+        <%= form_with url: "/crm/calendar", method: :get, class: "calendar-search" do %>
+          <% state.except("q", "patient").each do |key, value| %><%= hidden_field_tag key, value, id: nil %><% end %>
+          <label>Клиент или питомец <input name="q" required minlength="2" maxlength="100" value="<%= state["q"] %>"></label>
+          <button class="button secondary">Найти</button>
+        <% end %>
+        <% (@found || []).each do |p| %>
+          <a class="patient-choice" aria-pressed="<%= state["patient"] == p["id"] %>" href="<%= calendar_url_with("patient" => p["id"]) %>">
+            <%= p["lastName"] %> <%= p["firstName"] %> · <%= p["name"] || p["species"] %> · <%= p["phone"] %>
+          </a>
+        <% end %>
+        <% if @found&.empty? %><p class="muted">Никого не нашли.</p><% end %>
+      <% end %>
+      <% if @patient && !selected %><p>Выбран: <%= @patient["lastName"] %> <%= @patient["firstName"] %> · <%= @patient["name"] || @patient["species"] %></p><% end %>
+
+      <fieldset class="calendar-fields" <%= "disabled" if locked %>>
+        <%= form_with url: "/crm/calendar", method: :get do %>
+          <% state.except("service", "booking_day", "slots", "start").each do |key, value| %><%= hidden_field_tag key, value, id: nil %><% end %>
+          <%= hidden_field_tag :slots, "1", id: nil %>
+          <label>Врач и услуга
+            <select name="service" required>
+              <option value="">Выбери услугу</option>
+              <% data["services"].each do |s| %>
+                <option value="<%= s["id"] %>" <%= "selected" if @service_id == s["id"] %>><%= doctors.find { |d| d["id"] == s["doctorId"] }&.dig("name") %> · <%= s["title"] %> · <%= s["durationMinutes"] %> мин</option>
+              <% end %>
+            </select>
+          </label>
+          <label>Дата приёма <input type="date" name="booking_day" value="<%= @booking_day %>" required></label>
+          <button class="button secondary">Показать свободные окна</button>
+        <% end %>
+
+        <% if @slots %>
+          <% if @slots.empty? %><p role="status">На эту дату свободных окон нет.</p><% end %>
+          <%= form_with url: "/crm/calendar", method: :post do %>
+            <%= command_fields(selected ? "reschedule_booking" : "create_booking", revision) %>
+            <%= hidden_field_tag :service_id, @service_id, id: nil %>
+            <% if selected %>
+              <%= hidden_field_tag :id, selected["id"], id: nil %>
+              <%= hidden_field_tag :expected_version, selected["version"], id: nil %>
+            <% else %>
+              <%= hidden_field_tag :patient_id, @patient&.dig("id"), id: nil %>
+            <% end %>
+            <div class="calendar-slots">
+              <% @slots.each do |s| %>
+                <label class="slot-choice"><input type="radio" name="start" value="<%= s["start"] %>" required> <%= hm(s["start"]) %>–<%= hm(s["end"]) %></label>
+              <% end %>
+            </div>
+            <label>Комментарий <textarea name="note" maxlength="4000"><%= selected&.dig("note") %></textarea></label>
+            <% if selected || @patient %>
+              <button class="button"><%= selected ? "Перенести приём" : "Записать" %></button>
+            <% else %>
+              <p class="muted">Сначала найди и выбери клиента или питомца.</p>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <% if selected && selected["status"] == "active" %>
+          <%= form_with url: "/crm/calendar", method: :post do %>
+            <%= command_fields("cancel_booking", revision) %>
+            <%= hidden_field_tag :id, selected["id"], id: nil %>
+            <%= hidden_field_tag :expected_version, selected["version"], id: nil %>
+            <label>Причина отмены <textarea name="reason" maxlength="4000"></textarea></label>
+            <button class="button secondary" data-turbo-confirm="Отменить приём?">Отменить приём</button>
+          <% end %>
+        <% end %>
+      </fieldset>
+      <p class="muted">Условия услуги сохраняются в приёме. Оплата этим действием не подтверждается.</p>
+
+      <% if selected %>
+        <details>
+          <summary>История приёма</summary>
+          <ol>
+            <% data["history"].select { |x| x["entityId"] == selected["id"] }.each do |x| %>
+              <li>
+                <%= format_date_time_seconds(x["at"]) %> · <%= x["actorName"] || "Система" %> · <%= CalendarHelper::HISTORY_ACTIONS.fetch(x["action"], "Изменён приём") %>
+                <p>До: <%= history_state(x["before"]) %></p>
+                <p>После: <%= history_state(x["after"]) %></p>
+              </li>
+            <% end %>
+          </ol>
+        </details>
+      <% end %>
+    </section>
+
+    <section class="panel">
+      <h2>Каталог и графики</h2>
+      <p class="muted">Вноси подтверждённые услуги и смены. Приём можно назначить только в доступное окно.</p>
+      <div class="calendar-fields">
+        <details>
+          <summary>Добавить врача</summary>
+          <%= form_with url: "/crm/calendar", method: :post do %>
+            <%= command_fields("add_doctor", revision) %>
+            <label>Имя <input name="name" required maxlength="200"></label>
+            <label>Специализация <input name="specialty" maxlength="200"></label>
+            <button class="button">Добавить врача</button>
+          <% end %>
+        </details>
+        <details>
+          <summary>Добавить услугу</summary>
+          <%= form_with url: "/crm/calendar", method: :post do %>
+            <%= command_fields("upsert_service", revision) %>
+            <%= render "calendar/doctor_select", doctors: %>
+            <label>Название <input name="title" required maxlength="250"></label>
+            <label>Длительность, минут <input name="duration" type="number" min="5" max="480" value="60" required></label>
+            <label>Цена, ₽ (пусто — неизвестна) <input name="price" type="number" min="0" max="21474836.47" step="0.01"></label>
+            <label>Предоплата, % <input name="prepayment" type="number" min="0" max="100" value="0" required></label>
+            <button class="button">Добавить услугу</button>
+          <% end %>
+        </details>
+        <details>
+          <summary>Добавить смену или перерыв</summary>
+          <%= form_with url: "/crm/calendar", method: :post do %>
+            <%= command_fields("add_interval", revision) %>
+            <%= render "calendar/doctor_select", doctors: %>
+            <label>Дата <input type="date" name="day" value="<%= state["day"] %>" required></label>
+            <label>Тип <select name="kind"><option value="shift">Смена</option><option value="break">Перерыв</option></select></label>
+            <label>Начало <input type="time" name="from" value="09:00" required></label>
+            <label>Окончание <input type="time" name="to" value="18:00" required></label>
+            <button class="button">Добавить интервал</button>
+          <% end %>
+        </details>
+      </div>
+    </section>
+  </div>
+</main>

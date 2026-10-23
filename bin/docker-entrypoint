@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+# If running the rails server then create or migrate existing database
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  # Creates/loads the schema on an empty database, adopts a database migrated by the
+  # previous Node app, then ensures the singleton rows (idempotent).
+  ./bin/rails db:prepare
+  ./bin/rails db:seed
+fi
+
+exec "${@}"
